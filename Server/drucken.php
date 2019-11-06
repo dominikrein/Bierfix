@@ -55,21 +55,6 @@
                 '</s:Body>' +
             '</s:Envelope>';
 
-            /*
-            <epos-print xmlns="http://www.epson-pos.com/schemas/2011/03/epos-print">
-<page>
-<text align="center"/>
-<feed line="1"/>
-<text reverse="false" ul="false" em="false" color="color_1"/>
-<text>2. Öschinger&#10;</text>
-<feed line="2"/>
-<text width="3" height="4"/>
-<text>Weideabtrieb&#10;</text>
-</page>
-<cut type="feed"/>
-</epos-print>
-            */
-
         // Send print document
         var xhr = new XMLHttpRequest();
         xhr.open('POST', url, true);
