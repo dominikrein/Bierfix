@@ -14,6 +14,7 @@
             var bezeichnung = document.getElementById(`bezeichnung${artikelId}`).innerHTML;
             var menge = document.getElementById(`menge${artikelId}`).innerHTML;
             var preis = parseFloat(document.getElementById(`preis${artikelId}`).innerHTML);
+            //Todo Prüfen ob Element bereits vorhanden und ggf Anzahl erhöhen.
             bestellung.push([artikelId, bezeichnung, menge, preis]);
             
             
@@ -38,6 +39,10 @@
     <head>
         <title>Artikel - Bierfix</title>
         <link rel="stylesheet" type="text/css" href="main.css">
+        <meta 
+            name='viewport' 
+            content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0' 
+        />
     </head>
     <body>
         <div class="kopfzeile">
@@ -63,7 +68,7 @@
         <div class="artikelfooter">
             <p id="gesamtbetrag">Gesamtbetrag: 00.00€</p>
             <hr />
-            <button class="links" type="button">Abbrechen</button>
+            <a href="index.php"><button class="links" type="button">Abbrechen</button></a>
             <button class="rechts" type="button">&Uuml;bersicht</button>
         </div>
         
