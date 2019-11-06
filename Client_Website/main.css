@@ -16,6 +16,8 @@ html, body {
     height: 100%;
     width: 100%;
     margin: 0;
+    flex: 1;
+    overflow: auto;
 }
 
 #formTischnr{
@@ -49,4 +51,110 @@ html, body {
     font-family: Helvetica, Arial, sans-serif;
     color: #14A76C;
     margin: 0;
+}
+
+.untenrechts img{
+    position: absolute;
+    bottom: 1%;
+    right: 1%;
+    width: 5%;
+}
+
+.kopfzeile{
+    height: 22px;
+    width: 100%;
+    background-color: #747474;
+}
+
+.kopfzeile p{ 
+    font-family: Helvetica, Arial, sans-serif;
+    font-size: 15px;
+    margin: 3px 5px 2px 5px;
+    font-weight: bold;
+}
+.kopfzeile .links{ 
+    float: left;
+    color: #FFE400;
+}
+.kopfzeile .rechts{ 
+    float: right;
+    color: #14A76C
+}
+
+.inhalt{
+    height: 100%;
+    margin-bottom: 35%;
+    /*Murks vom feinsten, irgendwie muss man es noch hinbekommen dass der Inhalt nicht unter
+    die Fußzeile rutscht. Der margin zum bottom verhindert das hier zwar aktuell, aber ob das
+    auf jedem Gerät so ist (unterschiedliche Größen?)...*/
+}
+
+.artikel{
+    width: 24%;
+    margin: 0.5%;
+    /*background-color: #747474;*/
+    text-align: center;
+    font-family: Helvetica, Arial, sans-serif;
+    float: left;
+    position: relative;
+}
+
+.artikel .bezeichnung{    
+    font-size: 23px;
+    font-weight: bold;
+    padding: 4px 0 2px 0;
+}
+.artikel .menge{
+    font-size: 18px;
+    font-weight: bold;
+}
+.artikel .preis{
+    font-size: 14px;
+    padding: 2px 0 4px 0;
+}
+
+.artikelfooter{
+    width: 100%;
+    background-color: #747474;
+    bottom: 0;
+    position: absolute;
+    font-family: Helvetica, Arial, sans-serif;
+}
+
+.artikelfooter button{
+    height: 50px;
+    width: 30%;
+    border: none;
+    margin: 4px;
+}
+
+.artikelfooter .links{ 
+    float: left;
+    background-color: #FFE400;
+}
+.artikelfooter .rechts{ 
+    float: right;
+    background-color: #14A76C
+}
+
+.artikelfooter p{    
+    font-size: 20px;
+    font-weight: bold;
+    text-align: center;
+    margin: 4px 0 4px 4px;
+}
+
+.artikelfooter hr{
+    border: 1px solid #272727;
+    margin: 0;
+}
+
+.artikelAnzahl{
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    margin: 2px 0 2px 4px;
+    font-weight: bold;
+    color: white;
+    font-size: 15px;
 }
