@@ -3,9 +3,10 @@
     <head>
         <title>Bezahlen - Bierfix</title>
         <?php include 'header.php'; ?>
+        <script src="jquery.min.js" type="text/javascript"></script>
         <script>
             // Bestellung - Array Aufbau:
-            // ArtikelID  Bezeichnung  Menge  Preis  Anzahl
+            // ArtikelID  Bezeichnung  Menge  Preis  Anzahl Auswahl
             //kompletteBestellung enthält die ganze Bestellung, falls nur Auswahl bezahlt wird.
             sessionStorage.setItem("kompletteBestellung", sessionStorage.getItem("bestellung"));
             var bestellung = new Array();
@@ -133,8 +134,14 @@
             }
 
             function bestellungAbsenden(){
-                alert("gesendet!");
-                //todo
+                var asJson = JSON.stringify(sessionStorage.getItem("kompletteBestellung"));
+                $.post("drucken.php", {
+                    bestellung:`${asJson}`
+                }, function(data) {
+                    if (data == "") {
+                        alert('Fehler beim Senden!');
+                    }
+                });
             }
 
             window.onload = function(){
