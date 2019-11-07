@@ -1,11 +1,19 @@
 <?php
     
-    $bestellung = json_decode($_POST['postBestellung']);
+    (array)$bestellung = json_decode($_POST['postBestellung']);
     $tischnummer = $_POST['postTischnummer'];
     $bediener = $_POST['postBediener'];
     $datum = date("%a %d.%m.%j  %H:%M");
     $url = 'http://192.168.2.172/cgi-bin/epos/service.cgi?devid=epson&timeout=10000';
-    
+    $content = "";
+    file_put_contents("file.txt", $_POST['postBestellung']);
+foreach($bestellung as $artikel){
+    $anzahl = $artikel[4];
+    $beschreibung = $artikel[1] . $artikel[2];
+    $preis = $artikel[3] * $anzahl;
+    $content += "<feed/> <text smooth=\"true\" align=\"left\" reverse=\"false\">$anzahl x $beschreibung  $preis €</text>";
+}
+
 $request_begin = <<<EOD
 <s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/">
 <s:Body>
@@ -22,29 +30,10 @@ $request_begin = <<<EOD
 <feed/>                   
 <text smooth="true" width="1" height="1" align="left" reverse="false">------------------------------------------</text>
 <feed/>
-<text smooth="true" width="1" height="1" align="left" reverse="false">|                 Essen                  |</text>
+<text smooth="true" width="1" height="1" align="left" reverse="false">|                Artikel                 |</text>
 <feed/>
 <text smooth="true" width="1" height="1" align="left" reverse="false">------------------------------------------</text>
-<feed/>
-<text smooth="true" align="left" reverse="false">2x Steakweckle                       7.00€</text>
-<feed/>
-<text smooth="true" align="left" reverse="false">2x Rote Wurst                        6.00€</text>
-<feed/>
-<text smooth="true" width="1" height="1" align="left" reverse="false">------------------------------------------</text>
-<feed/>
-<text smooth="true" width="1" height="1" align="left" reverse="false">|                Getränke                |</text>
-<feed/>
-<text smooth="true" width="1" height="1" align="left" reverse="false">------------------------------------------</text>
-<feed/>
-<text smooth="true" align="left" reverse="false">2x Apfelschorle                      5.00€</text>
-<feed/>
-<text smooth="true" align="left" reverse="false">5x Bier 0.5l                        15.00€</text>
-<feed/>
-<text smooth="true" align="left" reverse="false">7x Pfand                            14.00€</text>
-<feed/>
-<text smooth="true" width="1" height="1" align="left" reverse="false">==========================================</text>
-<feed/>
-<text smooth="true" width="1" height="1" align="left" reverse="false">                           Gesamt:  47.00€</text>
+$content
 </page>
 <cut/>
 </epos-print>
@@ -52,9 +41,19 @@ $request_begin = <<<EOD
 </s:Envelope>
 EOD;
 
-foreach($bestellung as $artikel){
 
-}
+$opts = array('http' =>
+    array(
+        'method'  => 'POST',
+        'header'  => ["Content-type: text/xml; charset=utf-8", "If-Modified-Since: Thu, 01 Jan 1970 00:00:00 GMT", "SOAPAction: ''"],
+        'content' => $content
+    )
+);
+# Create the context
+$context = stream_context_create($opts);
+# Get the response (you can use this for GET)
+$result = file_get_contents($url, false, $context);
+
 ?>
 
 <!DOCTYPE html>
@@ -64,8 +63,7 @@ foreach($bestellung as $artikel){
         
         <script type="text/javascript">
             // URL of ePOS-Print supported TM printer
-            var url = 'http://192.168.2.172/cgi-bin/epos/service.cgi?devid=epson&timeout=10000';
-
+           
             function button1_Click() {
                
 
