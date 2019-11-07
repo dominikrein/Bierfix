@@ -8,7 +8,7 @@
 
         function addArtikel(artikelId){
             // Bestellung - Array Aufbau:
-            // ArtikelID  Bezeichnung  Menge  Preis  Anzahl
+            // ArtikelID  Bezeichnung  Menge  Preis  Anzahl Auswahl
             var bezeichnung = document.getElementById(`bezeichnung${artikelId}`).innerHTML;
             var menge = document.getElementById(`menge${artikelId}`).innerHTML;
             var preis = parseFloat(document.getElementById(`preis${artikelId}`).innerHTML);
@@ -22,7 +22,7 @@
                     break;
                 }
             }
-            if(!found){ bestellung.push([artikelId, bezeichnung, menge, preis, 1]); }
+            if(!found){ bestellung.push([artikelId, bezeichnung, menge, preis, 1, 0]); }
             
             //Artikelanzahl
             var anzahlArtikel = document.getElementById(`anzahlArtikel${artikelId}`).innerHTML;
@@ -55,7 +55,7 @@
             document.getElementById('pBediener').innerHTML = `Bediener: ${bediener}`;
 
             //Prüfe, ob zurück gegangen wurde - dann müssen Anzahlen und Gesamtpreis gesetzt werden
-            if(sessionStorage.getItem("bestellung") != null){
+            if(sessionStorage.getItem("bestellung") != "null"){
                 var restore = new Array();
                 restore = JSON.parse(sessionStorage.getItem("bestellung"));
                 for(var i = 0; i < restore.length; i++){

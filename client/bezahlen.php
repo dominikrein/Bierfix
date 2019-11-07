@@ -6,39 +6,37 @@
         <script>
             // Bestellung - Array Aufbau:
             // ArtikelID  Bezeichnung  Menge  Preis  Anzahl
+            //kompletteBestellung enthält die ganze Bestellung, falls nur Auswahl bezahlt wird.
+            sessionStorage.setItem("kompletteBestellung", sessionStorage.getItem("bestellung"));
             var bestellung = new Array();
-            bestellung = JSON.parse(sessionStorage.getItem("bestellung"));
+            bestellung = JSON.parse(sessionStorage.getItem("bestellung"));            
             var tischnummer = sessionStorage.getItem("tischnummer");
             var bediener = localStorage.getItem("bedienername");       
-
+            var gesamtbetrag = 0.00;
             var auswahlbetrag = 0.0;
             var gesamtabrechnen = true;
             
             function addAuswahl(artikelid){
-                aktuelleAuswahlAnzahl = parseInt(document.getElementById(`auswahlanzahl-${artikelid}`).innerHTML);
-                gesamtanzahl = getArticleCount(artikelid);
-
-                if(aktuelleAuswahlAnzahl < gesamtanzahl){
-                    auswahlbetrag = auswahlbetrag + parseFloat(getArticlePrice(artikelid));
-                    document.getElementById('auswahlbetrag').innerHTML = `Auswahlbetrag: ${auswahlbetrag.toFixed(2)}&euro;`;
-                    document.getElementById(`auswahlanzahl-${artikelid}`).innerHTML = `${aktuelleAuswahlAnzahl + 1} /`;
-                }
-            }
-
-            function getArticlePrice(artikelid){
                 for(var i = 0; i < bestellung.length; i++){
                     if(bestellung[i][0] == artikelid){
-                        return(bestellung[i][3]);
+                        var aktuelleAuswahlAnzahl = bestellung[i][5];
+                        var gesamtanzahl = bestellung[i][4];
+                        
+                        if(aktuelleAuswahlAnzahl < gesamtanzahl){
+                            var neueAuswahlAnzahl = aktuelleAuswahlAnzahl + 1;
+                            auswahlbetrag = auswahlbetrag + bestellung[i][3];
+                            document.getElementById('auswahlbetrag').innerHTML = `Auswahlbetrag: ${auswahlbetrag.toFixed(2)}&euro;`;
+                            document.getElementById(`auswahlanzahl-${artikelid}`).innerHTML = `${neueAuswahlAnzahl} /`;
+                            bestellung[i][5] = neueAuswahlAnzahl;
+                        }
+                        break;
                     }
-                }
+                }    
             }
 
-            function getArticleCount(artikelid){
-                for(var i = 0; i < bestellung.length; i++){
-                    if(bestellung[i][0] == artikelid){
-                        return(parseInt(bestellung[i][4]));
-                    }
-                }
+            function saveBestellung(){
+                var asJson = JSON.stringify(bestellung);
+                sessionStorage.setItem("bestellung", asJson);
             }
 
             function berechnenBetrag(){
@@ -79,8 +77,64 @@
                 document.getElementById("zurueck").value = "";
             }
 
-            function gesamtabrechnen(){
+            function gesamtAbrechnen(){
                 gesamtabrechnen = true;
+                //Rechner einblenden
+                document.getElementById("overlay").style.display = "block";
+                document.getElementById("betrag").value = gesamtbetrag;
+            }
+
+            function abgerechnet(){
+                if(gesamtabrechnen){
+                    bestellungAbsenden();  
+                    window.open("index.php","_self");                  
+                }
+                else{
+                    //Es wurde nur eine Auswahl abgerechnet
+                    //Folglich: Bestellung anpassen und Übersicht neu laden
+                    //somit werden Anzahlen aktualisiert angezeigt
+                    var loeschen = new Array();
+                    for(var i = 0; i < bestellung.length; i++){
+                        //Auswahl von Anzahl abziehen
+                        var auswahl = bestellung[i][5];
+                        var anzahl = bestellung[i][4];
+                        if(auswahl < anzahl){
+                            bestellung[i][4] = anzahl - auswahl;
+                            bestellung[i][5] = 0; //Auswahl zurücksetzen
+                            saveBestellung();
+                            location.reload();
+                        }
+                        else{
+                            //Artikel löschen da alle Anzahl bezahlt
+                            loeschen.push(bestellung[i][0]); //ArtikelID zur späteren Löschung ins Array schreiben                           
+                        }
+                    }    
+                    for(var i = 0; i < loeschen.length; i++){
+                        for(var j = 0; j < bestellung.length; j++){
+                            if(bestellung[j][0] == loeschen[i]){
+                                bestellung.splice(j, 1);
+                                break;
+                            }
+                        }
+                    }
+                    saveBestellung(); //Angepasste Bestellung speichern (original bleibt in kompletteBestellung zum Druck/Server).
+                    if(bestellung.length > 0){
+                        //Es gibt noch Artikel in der bestellung
+                        //Seite neu laden damit angepasste Bestellung dargestellt wird.
+                        location.reload();
+                    }
+                    else{
+                        //Bestellung leer - alles bezahlt
+                        bestellungAbsenden();
+                        window.open("index.php","_self");
+                    }
+                }
+               
+            }
+
+            function bestellungAbsenden(){
+                alert("gesendet!");
+                //todo
             }
 
             window.onload = function(){
@@ -93,7 +147,7 @@
                 var preis = "";
                 var anzahl = "";
                 var containerdiv = document.getElementById("content");
-                var gesamtbetrag = 0.00;
+                
 
                 for(var i = 0; i < bestellung.length; i++){
                     artikelId = bestellung[i][0];
@@ -141,7 +195,7 @@
             <input type="number" id="zurueck">
             <br>
             <button type="button" onclick="hideRechner()">Zur&uuml;ck</button>
-            <button type="button" onclick="abgerechnet()">Abgerechnet</button>
+            <button type="submit" onclick="abgerechnet()">Abgerechnet</button>
         </div>
         <div class="kopfzeile">
             <p class="links" id="pTischnummer"></p>
@@ -156,7 +210,7 @@
                 <p id="gesamtbetrag" style="color: #14A76C;">Gesamtbetrag: 00.00€</p>
                 <hr />
                 <a href="artikel.php"><button class="links" type="button">Zur&uuml;ck</button></a>
-                <button onclick="gesamtabrechnen()" class="rechts" type="button">Gesamt abrechnen</button>
+                <button onclick="gesamtAbrechnen()" class="rechts" type="button">Gesamt abrechnen</button>
                 <button onclick="auswahlabrechnen()" id="btnauswahl" class="rechts" type="button">Auswahl abrechnen</button>
             </div>
         </div>

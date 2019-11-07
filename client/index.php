@@ -6,7 +6,8 @@
         <script>
             function saveTischnummer(){
                 sessionStorage.setItem("tischnummer", document.getElementById("inputTischnr").value);
-                window.open("artikel.php");
+                window.location.assign("artikel.php");
+                return false; //Damit Form nicht die Seite neu lädt
             }
             window.onload = function(){
                 //Bestellung zurücksetzen
@@ -15,7 +16,7 @@
         </script>
     </head>
     <body>        
-        <form id="formTischnr" onsubmit="saveTischnummer()" action="" method="post" autocomplete="off">
+        <form id="formTischnr" onsubmit="return saveTischnummer()" action="" method="post" autocomplete="off">
             <p>Tischnummer</p>
             <input id="inputTischnr" name="inputTischnr" type="number" required>         
             <button type="submit">OK</button>

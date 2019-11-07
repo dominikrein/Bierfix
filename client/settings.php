@@ -6,12 +6,12 @@
         <script>
             function saveBediener(){
                 localStorage.setItem("bedienername", document.getElementById("bediener").value);
-                window.open("index.php");
+                window.open("index.php","_self");
             }
 
             window.onload = function() {
                 var name = localStorage.getItem("bedienername");
-                if(name != null){
+                if(name != "null"){
                     document.getElementById("bediener").value = name;
                 }
             }
