@@ -1,24 +1,26 @@
-<?php
-    if(isset($_COOKIE['bierfix-bediener'])){
-        $bediener = $_COOKIE['bierfix-bediener'];   
-    }
-    if(isset($_POST['bediener'])){
-        /* Formular wurde gesendet */
-        $bediener = $_POST['bediener'];
-        $expire = time() + (86400*30); /* Cookie 30 Tage gültig */
-        setcookie("bierfix-bediener", $bediener, $expire, "/");
-    }
-?>
 <!DOCTYPE html>
 <html>
     <head>
         <title>Einstellungen - Bierfix</title>
-        <link rel="stylesheet" type="text/css" href="main.css">
+        <?php include 'header.php'; ?>
+        <script>
+            function saveBediener(){
+                localStorage.setItem("bedienername", document.getElementById("bediener").value);
+                window.open("index.php");
+            }
+
+            window.onload = function() {
+                var name = localStorage.getItem("bedienername");
+                if(name != null){
+                    document.getElementById("bediener").value = name;
+                }
+            }
+        </script>
     </head>
     <body>
-    <form id="formTischnr" action="settings.php" method="post" autocomplete="off">
+    <form id="formTischnr" onsubmit="saveBediener()" action="" method="post" autocomplete="off">
             <p>Bedienername</p>
-            <input type="text" name="bediener" <?php if(isset($bediener)){echo ("value=\"" . $bediener . "\"");}?> required>         
+            <input type="text" name="bediener" id="bediener" value=" " required>         
             <a href="index.php"><button type="button">Zur&uuml;ck</button></a>
             <button type="submit">OK</button>
         </form>

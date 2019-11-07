@@ -1,23 +1,30 @@
-<?php
-    if(isset($_COOKIE['bierfix-bediener'])){
-        $bediener = $_COOKIE['bierfix-bediener'];   
-    }
-    $tischnummer = $_POST['inputTischnr'];
-?>
 <!DOCTYPE html>
 <html>
+    <script src="jquery.min.js" type="text/javascript"></script>
     <script>
         var bestellung = new Array();
+        var tischnummer = sessionStorage.getItem("tischnummer");
+        var bediener = localStorage.getItem("bedienername");
+
         function addArtikel(artikelId){
             // Bestellung - Array Aufbau:
             // ArtikelID  Bezeichnung  Menge  Preis  Anzahl
             var bezeichnung = document.getElementById(`bezeichnung${artikelId}`).innerHTML;
             var menge = document.getElementById(`menge${artikelId}`).innerHTML;
             var preis = parseFloat(document.getElementById(`preis${artikelId}`).innerHTML);
-            //Todo Prüfen ob Element bereits vorhanden und ggf Anzahl erhöhen.
-            bestellung.push([artikelId, bezeichnung, menge, preis]);
             
+            //Prüfen ob Element bereits vorhanden und ggf Anzahl erhöhen.
+            var found = false;
+            for(var i = 0; i < bestellung.length; i++){
+                if(bestellung[i][0] == artikelId){
+                    bestellung[i][4] = parseInt(bestellung[i][4]) + 1;
+                    found = true;
+                    break;
+                }
+            }
+            if(!found){ bestellung.push([artikelId, bezeichnung, menge, preis, 1]); }
             
+            //Artikelanzahl
             var anzahlArtikel = document.getElementById(`anzahlArtikel${artikelId}`).innerHTML;
             if(anzahlArtikel.length == 0){
                 //Falls noch keine Anzahl gesetzt
@@ -31,23 +38,44 @@
             //Wäre vermutlich sinnvoller den Gesamtbetrag nicht jedes mal neu zu berechnen...
             var gesamtbetrag = 0.0;
             for(var i = 0; i < bestellung.length; i++){
-                gesamtbetrag += bestellung[i][3];
+                gesamtbetrag += (bestellung[i][3] * bestellung[i][4]); //Preis * Anzahl
             }
             document.getElementById('gesamtbetrag').innerHTML = `Gesamtbetrag: ${gesamtbetrag.toFixed(2)}&euro;`;
+            sessionStorage.setItem("gesamtbetrag", gesamtbetrag.toFixed(2));
         }
+
+        function goToBestelluebersicht(){
+            var asJson = JSON.stringify(bestellung);
+            sessionStorage.setItem("bestellung", asJson);
+            window.open("bezahlen.php", "_self");
+        }
+
+        window.onload = function(){
+            document.getElementById('pTischnummer').innerHTML = `Tisch: ${tischnummer}`;
+            document.getElementById('pBediener').innerHTML = `Bediener: ${bediener}`;
+
+            //Prüfe, ob zurück gegangen wurde - dann müssen Anzahlen und Gesamtpreis gesetzt werden
+            if(sessionStorage.getItem("bestellung") != null){
+                var restore = new Array();
+                restore = JSON.parse(sessionStorage.getItem("bestellung"));
+                for(var i = 0; i < restore.length; i++){
+                    for(var j=0; j<restore[i][4];j++){
+                        addArtikel(restore[i][0]);
+                    }
+                }
+            
+            }
+        }
+
     </script>
     <head>
         <title>Artikel - Bierfix</title>
-        <link rel="stylesheet" type="text/css" href="main.css">
-        <meta 
-            name='viewport' 
-            content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0' 
-        />
+        <?php include 'header.php'; ?>
     </head>
     <body>
         <div class="kopfzeile">
-            <p class="links">Tischnummer: <?php echo $tischnummer;?></p>
-            <p class="rechts">Bediener: <?php echo $bediener;?></p>
+            <p class="links" id="pTischnummer"></p>
+            <p class="rechts" id="pBediener"></p>
         </div>
         <div class="inhalt">
             <?php
@@ -69,7 +97,7 @@
             <p id="gesamtbetrag">Gesamtbetrag: 00.00€</p>
             <hr />
             <a href="index.php"><button class="links" type="button">Abbrechen</button></a>
-            <button class="rechts" type="button">&Uuml;bersicht</button>
+            <button onclick="goToBestelluebersicht()" class="rechts" type="button">&Uuml;bersicht</button>
         </div>
         
     </body>
