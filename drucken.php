@@ -1,8 +1,60 @@
 <?php
-    $bestellung = json_decode($_POST['bestellung']);
-    $fp = fopen('lidn.txt', 'w');
-    fwrite($fp, $bestellung);
-    fclose($fp);
+    
+    $bestellung = json_decode($_POST['postBestellung']);
+    $tischnummer = $_POST['postTischnummer'];
+    $bediener = $_POST['postBediener'];
+    $datum = date("%a %d.%m.%j  %H:%M");
+    $url = 'http://192.168.2.172/cgi-bin/epos/service.cgi?devid=epson&timeout=10000';
+    
+$request_begin = <<<EOD
+<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/">
+<s:Body>
+<epos-print xmlns="http://www.epson-pos.com/schemas/2011/03/epos-print">
+<page>
+<feed/>
+<text smooth="true" align="center" width="1" height="2">         2. Öschinger Weideabtrieb&#10;</text>
+<feed/>
+<text smooth="true" width="1" height="1" align="left" reverse="false">            $datum Uhr</text>
+<feed/>
+<text smooth="true" width="1" height="1" align="left" reverse="false">------------------------------------------</text>
+<feed/>
+<text smooth="true"  align="center" width="2" height="2" reverse="true">  Tischnummer:  $tischnummer  </text>
+<feed/>                   
+<text smooth="true" width="1" height="1" align="left" reverse="false">------------------------------------------</text>
+<feed/>
+<text smooth="true" width="1" height="1" align="left" reverse="false">|                 Essen                  |</text>
+<feed/>
+<text smooth="true" width="1" height="1" align="left" reverse="false">------------------------------------------</text>
+<feed/>
+<text smooth="true" align="left" reverse="false">2x Steakweckle                       7.00€</text>
+<feed/>
+<text smooth="true" align="left" reverse="false">2x Rote Wurst                        6.00€</text>
+<feed/>
+<text smooth="true" width="1" height="1" align="left" reverse="false">------------------------------------------</text>
+<feed/>
+<text smooth="true" width="1" height="1" align="left" reverse="false">|                Getränke                |</text>
+<feed/>
+<text smooth="true" width="1" height="1" align="left" reverse="false">------------------------------------------</text>
+<feed/>
+<text smooth="true" align="left" reverse="false">2x Apfelschorle                      5.00€</text>
+<feed/>
+<text smooth="true" align="left" reverse="false">5x Bier 0.5l                        15.00€</text>
+<feed/>
+<text smooth="true" align="left" reverse="false">7x Pfand                            14.00€</text>
+<feed/>
+<text smooth="true" width="1" height="1" align="left" reverse="false">==========================================</text>
+<feed/>
+<text smooth="true" width="1" height="1" align="left" reverse="false">                           Gesamt:  47.00€</text>
+</page>
+<cut/>
+</epos-print>
+</s:Body>
+</s:Envelope>
+EOD;
+
+foreach($bestellung as $artikel){
+
+}
 ?>
 
 <!DOCTYPE html>
@@ -15,51 +67,7 @@
             var url = 'http://192.168.2.172/cgi-bin/epos/service.cgi?devid=epson&timeout=10000';
 
             function button1_Click() {
-                // Create print document
-                var req =
-                    '<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/">' +
-                        '<s:Body>' +
-                            '<epos-print xmlns="http://www.epson-pos.com/schemas/2011/03/epos-print">' +
-                            '<page>' +
-                            '<feed/>' +
-                    '<text smooth="true" align="center" width="1" height="2">         2. Öschinger Weideabtrieb&#10;</text>' +
-                            '<feed/>' +
-                            '<text smooth="true" width="1" height="1" align="left" reverse="false">            31.10.2020  21:50 Uhr</text>' +
-                            '<feed/>' +
-                            '<text smooth="true" width="1" height="1" align="left" reverse="false">------------------------------------------</text>' +
-                            '<feed/>' +
-                        '<text smooth="true"  align="center" width="2" height="2" reverse="true">  Tischnummer:  214  </text>' +
-                        '<feed/>' +                   
-                            '<text smooth="true" width="1" height="1" align="left" reverse="false">------------------------------------------</text>' +
-                            '<feed/>' +
-                            '<text smooth="true" width="1" height="1" align="left" reverse="false">|                 Essen                  |</text>' +
-                            '<feed/>' +
-                            '<text smooth="true" width="1" height="1" align="left" reverse="false">------------------------------------------</text>' +
-                            '<feed/>' +
-                            '<text smooth="true" align="left" reverse="false">2x Steakweckle                       7.00€</text>' +
-                            '<feed/>' +
-                            '<text smooth="true" align="left" reverse="false">2x Rote Wurst                        6.00€</text>' +
-                            '<feed/>' +
-                            '<text smooth="true" width="1" height="1" align="left" reverse="false">------------------------------------------</text>' +
-                            '<feed/>' +
-                            '<text smooth="true" width="1" height="1" align="left" reverse="false">|                Getränke                |</text>' +
-                            '<feed/>' +
-                            '<text smooth="true" width="1" height="1" align="left" reverse="false">------------------------------------------</text>' +
-                            '<feed/>' +
-                            '<text smooth="true" align="left" reverse="false">2x Apfelschorle                      5.00€</text>' +
-                            '<feed/>' +
-                            '<text smooth="true" align="left" reverse="false">5x Bier 0.5l                        15.00€</text>' +
-                            '<feed/>' +
-                            '<text smooth="true" align="left" reverse="false">7x Pfand                            14.00€</text>' +
-                            '<feed/>' +
-                            '<text smooth="true" width="1" height="1" align="left" reverse="false">==========================================</text>' +
-                            '<feed/>' +
-                            '<text smooth="true" width="1" height="1" align="left" reverse="false">                           Gesamt:  47.00€</text>' +
-                            '</page>' +
-                            '<cut/>' +
-                            '</epos-print>' +
-                        '</s:Body>' +
-                    '</s:Envelope>';
+               
 
                 // Send print document
                 var xhr = new XMLHttpRequest();

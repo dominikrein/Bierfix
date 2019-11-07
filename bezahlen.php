@@ -136,7 +136,9 @@
             function bestellungAbsenden(){
                 var asJson = JSON.stringify(sessionStorage.getItem("kompletteBestellung"));
                 $.post("drucken.php", {
-                    bestellung:`${asJson}`
+                    postBestellung:asJson,
+                    postTischnummer:tischnummer,
+                    postBediener:bediener
                 }, function(data) {
                     if (data == "") {
                         alert('Fehler beim Senden!');
