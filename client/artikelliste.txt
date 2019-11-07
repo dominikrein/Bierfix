@@ -9,14 +9,3 @@ Steak,im Wecken,3.50,#FF652F
 Rote,mit Wecken,2.90,#FF652F
 Pommes,&nbsp;,2.50,#FF652F
 Burger,&nbsp;,2.50,#FF652F
-Bier,0.5l,3.00,#14A76C
-Radler,0.5l,3.00,#14A76C
-Schorle,rot-sauer,2.50,#14A76C
-Spezi,0.5l,2.50,#14A76C
-ASchorle,0.5l,2.50,#14A76C
-Pfand,hinzu,2.00,#14A76C
-Pfand,abziehen,-2.00,#14A76C
-Steak,im Wecken,3.50,#FF652F
-Rote,mit Wecken,2.90,#FF652F
-Pommes,&nbsp;,2.50,#FF652F
-Burger,&nbsp;,2.50,#FF652F
