@@ -8,11 +8,11 @@
 
         function addArtikel(artikelId){
             // Bestellung - Array Aufbau:
-            // ArtikelID  Bezeichnung  Menge  Preis  Anzahl Auswahl
+            // ArtikelID  Bezeichnung  Menge  Preis  Anzahl Auswahl Typ
             var bezeichnung = document.getElementById(`bezeichnung${artikelId}`).innerHTML;
             var menge = document.getElementById(`menge${artikelId}`).innerHTML;
             var preis = parseFloat(document.getElementById(`preis${artikelId}`).innerHTML);
-            var typ = parseFloat(document.getElementById(`typ${artikelId}`).innerHTML);
+            var typ = parseInt(document.getElementById(`typ${artikelId}`).innerHTML);
 
             //Prüfen ob Element bereits vorhanden und ggf Anzahl erhöhen.
             var found = false;
