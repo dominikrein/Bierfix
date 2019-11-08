@@ -88,7 +88,7 @@
             function abgerechnet(){
                 if(gesamtabrechnen){
                     bestellungAbsenden();  
-                    window.open("index.php","_self");                  
+                    //window.open("index.php","_self");                  
                 }
                 else{
                     //Es wurde nur eine Auswahl abgerechnet

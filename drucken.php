@@ -1,7 +1,7 @@
 <?php
     //EINSTELLUNGEN
         $festTitel = center("2. Öschinger Weideabtrieb");
-        $printerIp = "192.168.2.172";
+        $printerIp = "192.168.2.127";
 
         $artikeltypen = array(
             '1'=>'Getränke',
@@ -31,28 +31,29 @@
     */
          
     $bestellung = new SimpleXMLElement($_POST["xml"]);
-    $bediener = $bestellung['bediener'];
+    $bediener = center("Kassierer: " . $bestellung['bediener']);
     $tischnummer = $bestellung['tischnummer'];
     $url = 'http://' . $printerIp . '/cgi-bin/epos/service.cgi?devid=epson&timeout=10000';
-    $settings = new SimpleXMLElement(file_get_contents("settings.xml"));
     
     $content = "";
     $aktuellerTyp = "";
+
+    $gesamtbetrag = 0.00;
 
     foreach($bestellung->artikel as $artikel){
         $anzahl = $artikel['anzahl'];
         $bezeichnung = $artikel['bezeichnung'];
         $menge = $artikel['menge'];
         $typ = $artikel['typ'];
-        $preis = $artikel['preis'] * $anzahl;
+        $preis = number_format(($artikel['preis'] * $anzahl), 2, '.', '');
+        $gesamtbetrag += $preis;
 
         //Die Liste ist nach Typ (Essen, Getränke, ...) sortiert (irgendwo bei artikel.php).
-        //Der Typ ist int - lookup Datei: settings.xml
-        if($aktuellerTyp != $typ){
+        if(strcmp($typ, $aktuellerTyp) != 0){
             //Anderer Typ - Typ drucken
             $aktuellerTyp = $typ;
-            $centered = center($artikeltypen[$typ]);
-            $content += "<feed/><text smooth="true" width="1" height="1" align="left" reverse="false">------------------------------------------</text><feed/><text smooth="true" width="1" height="1" align="left" reverse="false">$centered</text><feed/><text smooth="true" width="1" height="1" align="left" reverse="false">------------------------------------------</text>";
+            $centered = center($artikeltypen["$typ"]);
+            $content .= "<feed/><text smooth=\"true\" width=\"1\" height=\"1\" align=\"left\" reverse=\"false\">------------------------------------------</text><feed/><text smooth=\"true\" width=\"1\" height=\"1\" align=\"left\" reverse=\"false\">$centered</text><feed/><text smooth=\"true\" width=\"1\" height=\"1\" align=\"left\" reverse=\"false\">------------------------------------------</text>";
         }      
 
         //Es stehen beim Drucker exakt 42 Zeichen pro Zeile zur Verfügung 
@@ -64,11 +65,21 @@
             $leerzeichen = $leerzeichen . " ";
         }
 
-        $content += "<feed/> <text smooth=\"true\" align=\"left\" reverse=\"false\">" . $anzahl . "x " . $bezeichnung . " " . $menge . $leerzeichen . $preis . "€</text>";
+        $content .= "<feed/> <text smooth=\"true\" align=\"left\" reverse=\"false\">" . $anzahl . "x " . $bezeichnung . " " . $menge . $leerzeichen . $preis . "€</text>";
     }
 
-    $datum = center(date("%a %d.%m.%j  %H:%M") . " Uhr");
-    $tischnummer = center("Tischnummer: " . $tischnummer);
+    $datum = center(date("d.m.Y  H:i") . " Uhr");
+    //$tischnummer = center("Tischnummer: " . $tischnummer);
+    
+    //Gesamtbetrag als String und rechtsbündig
+    $gesamtbetrag = number_format($gesamtbetrag, 2, '.', '');
+    $gesamtbetrag = "Gesamt: " . $gesamtbetrag . "€";
+    $notwendigeLeerzeichen = 42 - strlen($gesamtbetrag);
+    $leerzeichen = "";
+    for($i = 0; $i < ($notwendigeLeerzeichen); $i++){
+        $leerzeichen = $leerzeichen . " ";
+    }
+    $gesamtbetrag = $leerzeichen . $gesamtbetrag;
 
 $request = <<<EOD
 <s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/">
@@ -80,10 +91,14 @@ $request = <<<EOD
 <feed/>
 <text smooth="true" width="1" height="1" align="left" reverse="false">$datum</text>
 <feed/>
-<text smooth="true" width="1" height="1" align="left" reverse="false">------------------------------------------</text>
+<text smooth="true" width="1" height="1" align="left" reverse="false">$bediener</text>
 <feed/>
 <text smooth="true"  align="center" width="2" height="2" reverse="true">$tischnummer</text>
 $content
+<feed/>
+<text smooth="true" width="1" height="1" align="left" reverse="false">==========================================</text>
+<feed/>
+<text smooth="true" width="1" height="1" align="left" reverse="false">$gesamtbetrag</text>
 </page>
 <cut/>
 </epos-print>
@@ -91,6 +106,37 @@ $content
 </s:Envelope>
 EOD;
 
+file_put_contents("xml.xml", $request);
+
+//Initiate cURL
+$curl = curl_init($url);
+ 
+//Set the Content-Type to text/xml.
+curl_setopt($curl, CURLOPT_HTTPHEADER, array("Content-Type: text/xml", "If-Modified-Since: Thu, 01 Jan 1970 00:00:00 GMT", "SOAPAction: \"\""));
+ 
+//Set CURLOPT_POST to true to send a POST request.
+curl_setopt($curl, CURLOPT_POST, true);
+ 
+//Attach the XML string to the body of our request.
+curl_setopt($curl, CURLOPT_POSTFIELDS, $request);
+ 
+//Tell cURL that we want the response to be returned as
+//a string instead of being dumped to the output.
+curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+ 
+//Execute the POST request and send our XML.
+$result = curl_exec($curl);
+ 
+//Do some basic error checking.
+if(curl_errno($curl)){
+    throw new Exception(curl_error($curl));
+}
+ 
+//Close the cURL handle.
+curl_close($curl);
+ 
+//Print out the response output.
+echo $result;
 
 /* JavaScript POST: https://stackoverflow.com/questions/58766486/create-xmlhttprequest-from-php
 
