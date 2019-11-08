@@ -12,7 +12,8 @@
             var bezeichnung = document.getElementById(`bezeichnung${artikelId}`).innerHTML;
             var menge = document.getElementById(`menge${artikelId}`).innerHTML;
             var preis = parseFloat(document.getElementById(`preis${artikelId}`).innerHTML);
-            
+            var typ = parseFloat(document.getElementById(`typ${artikelId}`).innerHTML);
+
             //Prüfen ob Element bereits vorhanden und ggf Anzahl erhöhen.
             var found = false;
             for(var i = 0; i < bestellung.length; i++){
@@ -22,7 +23,7 @@
                     break;
                 }
             }
-            if(!found){ bestellung.push([artikelId, bezeichnung, menge, preis, 1, 0]); }
+            if(!found){ bestellung.push([artikelId, bezeichnung, menge, preis, 1, 0, typ]); }
             
             //Artikelanzahl
             var anzahlArtikel = document.getElementById(`anzahlArtikel${artikelId}`).innerHTML;
@@ -45,6 +46,11 @@
         }
 
         function goToBestelluebersicht(){
+            //Bestellung sortieren nach Typ (1=Getränke, 2=Essen, ...)
+            bestellung = bestellung.sort(function(a,b) {
+                return a[6] - b[6];
+            });
+
             var asJson = JSON.stringify(bestellung);
             sessionStorage.setItem("bestellung", asJson);
             window.open("bezahlen.php", "_self");
@@ -88,6 +94,7 @@
                             <div id="bezeichnung' . $i . '" class="bezeichnung">' . $arr[0] . '</div>
                             <div id="menge' . $i . '" class="menge">' . $arr[1] . '</div>
                             <div id="preis' . $i . '" class="preis">' . $arr[2] . '&euro;</div>
+                            <div id="typ' . $i . '" style="display: none;">' . $arr[4] . '</div>
                             <p id="anzahlArtikel' . $i . '" class="artikelAnzahl"></p>
                             </div>';
                 }

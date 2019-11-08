@@ -1,11 +1,11 @@
-Bier,0.5l,3.00,#14A76C
-Radler,0.5l,3.00,#14A76C
-Schorle,rot-sauer,2.50,#14A76C
-Spezi,0.5l,2.50,#14A76C
-ASchorle,0.5l,2.50,#14A76C
-Pfand,hinzu,2.00,#14A76C
-Pfand,abziehen,-2.00,#14A76C
-Steak,im Wecken,3.50,#FF652F
-Rote,mit Wecken,2.90,#FF652F
-Pommes,&nbsp;,2.50,#FF652F
-Burger,&nbsp;,2.50,#FF652F
+Bier,0.5l,3.00,#14A76C,1
+Radler,0.5l,3.00,#14A76C,1
+Schorle,rot-sauer,2.50,#14A76C,1
+Spezi,0.5l,2.50,#14A76C,1
+ASchorle,0.5l,2.50,#14A76C,1
+Pfand,hinzu,2.00,#14A76C,1
+Pfand,abziehen,-2.00,#14A76C,1
+Steak,im Wecken,3.50,#FF652F,2
+Rote,mit Wecken,2.90,#FF652F,2
+Pommes,&nbsp;,2.50,#FF652F,2
+Burger,&nbsp;,2.50,#FF652F,2
