@@ -88,7 +88,7 @@
             function abgerechnet(){
                 if(gesamtabrechnen){
                     bestellungAbsenden();  
-                    //window.open("index.php","_self");                  
+                    window.open("index.php","_self");                  
                 }
                 else{
                     //Es wurde nur eine Auswahl abgerechnet
@@ -138,25 +138,24 @@
                 var bst = JSON.parse(sessionStorage.getItem("kompletteBestellung"));
 
                 //create XML to transfer to php
-                var xml_begin = `<info bediener="${bediener}" tischnummer="${tischnummer}" /><artikel>`;
+                var xml_header = "\<?xml version='1.0' standalone='yes'?>";
+                var xml_begin = `<bestellung bediener="${bediener}" tischnummer="${tischnummer}">`;
                 var xml_content = "";
                 for(var i = 0; i < bst.length; i++){
                     //      0           1          2    3       4       5       6
                     // artikelId, bezeichnung, menge, preis, anzahl, auswahl, typ
                     xml_content = xml_content + `<artikel id="${bst[i][0]}" bezeichnung="${bst[i][1]}" menge="${bst[i][2]}" preis="${bst[i][3]}" anzahl="${bst[i][4]}" typ="${bst[i][6]}" />`;
                 }
-                var xml_end = "</artikel";
-                var xml = xml_begin + xml_content + xml_end;
-
-                var xhr = new XMLHttpRequest();
-                xhr.open('POST', 'drucken.php', true);
-                xhr.setRequestHeader('Content-type', 'text/xml; charset=utf-8');
-                xhr.onload = function () {
-                    // do something to response
-                    console.log(this.responseText);
-                };
-                console.log(xml);
-                xhr.send(xml);
+                var xml_end = "</bestellung>";
+                var xml = xml_header + xml_begin + xml_content + xml_end;
+                $.ajax({
+                    url: 'drucken.php',
+                    type: 'POST',
+                    data: {xml:xml},
+                    success: function(data){
+                        console.log(data);
+                    }
+                });
             }
 
             window.onload = function(){

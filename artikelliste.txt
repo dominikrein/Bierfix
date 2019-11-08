@@ -7,5 +7,5 @@ Pfand,hinzu,2.00,#14A76C,1
 Pfand,abziehen,-2.00,#14A76C,1
 Steak,im Wecken,3.50,#FF652F,2
 Rote,mit Wecken,2.90,#FF652F,2
-Pommes,&nbsp;,2.50,#FF652F,2
-Burger,&nbsp;,2.50,#FF652F,2
+Pommes,Schale,2.50,#FF652F,2
+Burger,Stueck,2.50,#FF652F,2
