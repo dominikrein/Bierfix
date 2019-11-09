@@ -21,6 +21,16 @@
         return $leerzeichen . $text;             
     }
 
+    function centerzwei($text){
+        //Eine ungerade Zahl nötiger Leerzeichen kann vermutlich vernachlässigt werden.
+        $notwendigeLeerzeichen = 20 - strlen($text);
+        $leerzeichen = "";
+        for($i = 0; $i < ($notwendigeLeerzeichen / 2); $i++){
+            $leerzeichen = $leerzeichen . " ";
+        }
+        return $leerzeichen . $text . $leerzeichen;             
+    }
+
     /*  <?xml version='1.0' standalone='yes'?>
         <bestellung bediener="bla" tischnummer="50">
             <artikel id="0" bezeichnung="Bier" menge="0.5l" preis="3" anzahl="1" typ="1" />
@@ -59,22 +69,22 @@
         //Es stehen beim Drucker exakt 42 Zeichen pro Zeile zur Verfügung 
         //Da Preis rechtsbündig müssen die Leerzeichen berechnet werden!
         //2x Bier 0,5l    6.50€
-        $textlaenge= strlen($anzahl) + strlen("x ") + strlen($bezeichnung) + strlen(" ") + strlen($menge) + strlen($preis) + strlen("€");
-        $leerzeichen = "";
-        for($i = 0; $i < (42 - $textlaenge); $i++){
-            $leerzeichen = $leerzeichen . " ";
+        $leerzeichen = "";                
+        $zeile = "";
+        while(strlen($zeile) < 44){            
+            $zeile = $anzahl . "x " . $bezeichnung . " " . $menge . $leerzeichen . $preis . "€";
+            $leerzeichen .= " ";
         }
-
-        $content .= "<feed/> <text smooth=\"true\" align=\"left\" reverse=\"false\">" . $anzahl . "x " . $bezeichnung . " " . $menge . $leerzeichen . $preis . "€</text>";
+        $content .= "<feed/> <text smooth=\"true\" align=\"left\" reverse=\"false\">" . $zeile . "</text>";
     }
 
     $datum = center(date("d.m.Y  H:i") . " Uhr");
-    //$tischnummer = center("Tischnummer: " . $tischnummer);
+    $tischnummer = centerzwei("Tischnummer: $tischnummer"); //width des textes ist zwei
     
     //Gesamtbetrag als String und rechtsbündig
     $gesamtbetrag = number_format($gesamtbetrag, 2, '.', '');
     $gesamtbetrag = "Gesamt: " . $gesamtbetrag . "€";
-    $notwendigeLeerzeichen = 42 - strlen($gesamtbetrag);
+    $notwendigeLeerzeichen = 44 - strlen($gesamtbetrag);
     $leerzeichen = "";
     for($i = 0; $i < ($notwendigeLeerzeichen); $i++){
         $leerzeichen = $leerzeichen . " ";
@@ -92,6 +102,7 @@ $request = <<<EOD
 <text smooth="true" width="1" height="1" align="left" reverse="false">$datum</text>
 <feed/>
 <text smooth="true" width="1" height="1" align="left" reverse="false">$bediener</text>
+<feed/>
 <feed/>
 <text smooth="true"  align="center" width="2" height="2" reverse="true">$tischnummer</text>
 $content

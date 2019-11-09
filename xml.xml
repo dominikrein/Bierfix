@@ -1,0 +1,23 @@
+<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/">
+<s:Body>
+<epos-print xmlns="http://www.epson-pos.com/schemas/2011/03/epos-print">
+<page>
+<feed/>
+<text smooth="true" align="center" width="1" height="2">        2. Öschinger Weideabtrieb</text>
+<feed/>
+<text smooth="true" width="1" height="1" align="left" reverse="false">           09.11.2019  19:25 Uhr</text>
+<feed/>
+<text smooth="true" width="1" height="1" align="left" reverse="false">            Kassierer: Dominik</text>
+<feed/>
+<feed/>
+<text smooth="true"  align="center" width="2" height="2" reverse="true">  Tischnummer: 123  </text>
+<feed/><text smooth="true" width="1" height="1" align="left" reverse="false">------------------------------------------</text><feed/><text smooth="true" width="1" height="1" align="left" reverse="false">                 Getränke</text><feed/><text smooth="true" width="1" height="1" align="left" reverse="false">------------------------------------------</text><feed/> <text smooth="true" align="left" reverse="false">1x Bier 0.5l                         3.00€</text><feed/> <text smooth="true" align="left" reverse="false">1x Radler 0.5l                       3.00€</text><feed/> <text smooth="true" align="left" reverse="false">2x Pfand hinzu                       4.00€</text><feed/><text smooth="true" width="1" height="1" align="left" reverse="false">------------------------------------------</text><feed/><text smooth="true" width="1" height="1" align="left" reverse="false">                  Speisen</text><feed/><text smooth="true" width="1" height="1" align="left" reverse="false">------------------------------------------</text><feed/> <text smooth="true" align="left" reverse="false">2x Pommes Schale                     5.00€</text><feed/> <text smooth="true" align="left" reverse="false">1x Burger Stueck                     2.50€</text><feed/> <text smooth="true" align="left" reverse="false">1x Steak im Wecken                   3.50€</text>
+<feed/>
+<text smooth="true" width="1" height="1" align="left" reverse="false">==========================================</text>
+<feed/>
+<text smooth="true" width="1" height="1" align="left" reverse="false">                          Gesamt: 21.00€</text>
+</page>
+<cut/>
+</epos-print>
+</s:Body>
+</s:Envelope>
