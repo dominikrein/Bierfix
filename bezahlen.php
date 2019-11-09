@@ -8,7 +8,10 @@
             // Bestellung - Array Aufbau:
             // ArtikelID  Bezeichnung  Menge  Preis  Anzahl Auswahl
             //kompletteBestellung enthält die ganze Bestellung, falls nur Auswahl bezahlt wird.
-            sessionStorage.setItem("kompletteBestellung", sessionStorage.getItem("bestellung"));
+
+            if(sessionStorage.getItem("kompletteBestellung") == "null"){
+                sessionStorage.setItem("kompletteBestellung", sessionStorage.getItem("bestellung"));
+            }            
             var bestellung = new Array();
             bestellung = JSON.parse(sessionStorage.getItem("bestellung"));            
             var tischnummer = sessionStorage.getItem("tischnummer");
@@ -90,7 +93,7 @@
             function abgerechnet(){
                 if(gesamtabrechnen){
                     bestellungAbsenden();  
-                    //window.open("index.php","_self");                  
+                    window.open("index.php","_self");                  
                 }
                 else{
                     //Es wurde nur eine Auswahl abgerechnet
@@ -143,10 +146,13 @@
                 var xml_header = "\<?xml version='1.0' standalone='yes'?>";
                 var xml_begin = `<bestellung bediener="${bediener}" tischnummer="${tischnummer}">`;
                 var xml_content = "";
+                
                 for(var i = 0; i < bst.length; i++){
+                    var menge = bst[i][2];
+                    if(menge == "&nbsp;"){ menge = ""; }
                     //      0           1          2    3       4       5       6
                     // artikelId, bezeichnung, menge, preis, anzahl, auswahl, typ
-                    xml_content = xml_content + `<artikel id="${bst[i][0]}" bezeichnung="${bst[i][1]}" menge="${bst[i][2]}" preis="${bst[i][3]}" anzahl="${bst[i][4]}" typ="${bst[i][6]}" />`;
+                    xml_content = xml_content + `<artikel id="${bst[i][0]}" bezeichnung="${bst[i][1]}" menge="${menge}" preis="${bst[i][3]}" anzahl="${bst[i][4]}" typ="${bst[i][6]}" />`;
                 }
                 var xml_end = "</bestellung>";
                 var xml = xml_header + xml_begin + xml_content + xml_end;
@@ -177,7 +183,7 @@
                     bezeichnung = bestellung[i][1];
                     menge = bestellung[i][2];
                     preis = (bestellung[i][3] * bestellung[i][4]).toFixed(2); //Gesamtpreis
-                    gesamtbetrag = gesamtbetrag + parseFloat(preis);
+                    gesamtbetrag = (parseFloat(gesamtbetrag) + parseFloat(preis)).toFixed(2);
                     anzahl = bestellung[i][4];
                     
                     var newdiv = document.createElement("div");
@@ -205,7 +211,7 @@
                     newdiv.appendChild(newlinks);
                     newdiv.appendChild(newrechts);
                     containerdiv.appendChild(newdiv);                    
-                }
+                }                
                 document.getElementById('gesamtbetrag').innerHTML = `Gesamtbetrag: ${gesamtbetrag}&euro;`;
             }
         </script>

@@ -11,6 +11,9 @@
         var touchduration = 500; //length of time we want the user to touch before we do something
         var touchArtikelId;
 
+        //kompletteBestellung zurücksetzen
+        sessionStorage.setItem("kompletteBestellung", "null");
+
         function touchstart(artikelId) {
             timer = setTimeout(onlongtouch, touchduration); 
             touchArtikelId = artikelId;

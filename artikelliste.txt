@@ -1,11 +1,23 @@
-Bier,0.5l,3.00,#14A76C,1
-Radler,0.5l,3.00,#14A76C,1
-Schorle,rot-sauer,2.50,#14A76C,1
-Spezi,0.5l,2.50,#14A76C,1
-ASchorle,0.5l,2.50,#14A76C,1
-Pfand,hinzu,2.00,#14A76C,1
-Pfand,abziehen,-2.00,#14A76C,1
-Steak,im Wecken,3.50,#FF652F,2
-Rote,mit Wecken,2.90,#FF652F,2
-Pommes,Schale,2.50,#FF652F,2
-Burger,Stueck,2.50,#FF652F,2
+Bier,0.5l,2.90,#EE82EE,1
+Radler,0.5l,2.90,#EE82EE,1
+Bier,Alkoholfrei,2.40,#EE82EE,1
+Rote,mit Wecken,2.90,#DAA520,2
+Steak,im Wecken,3.50,#DAA520,2
+Pommes,&nbsp;,3.00,#DAA520,2
+Cola,0.33l,2.00,#98FB98,1
+Fanta,0.33l,2.00,#98FB98,1
+Spezi,0.5l,2.20,#98FB98,1
+ASchorle,0.5l,2.20,#98FB98,1
+Limo,0.5l,2.00,#98FB98,1
+Sprudel,0.5l,2.00,#98FB98,1
+Wein,rot 0.25l,3.80,#DC143C,1
+Schorle,rot/sauer,2.90,#DC143C,1
+Schorle,rot/süß,2.90,#DC143C,1
+Wein,weiß 0.25l,3.80,#EEE8AA,1
+Schorle,weiß/sauer,2.90,#EEE8AA,1
+Schorle,weiß/süß,2.90,#EEE8AA,1
+Glühwein,0.2l,2.30,#A0522D,1
+Punsch,0.2l,2.00,#A0522D,1
+Pfand,&nbsp;,2.00,#48D1CC,1
+Kaffee,&nbsp;,1.80,#FFA07A,3
+Kuchen,&nbsp;,2.00,#FFA07A,3
