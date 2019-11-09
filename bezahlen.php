@@ -16,6 +16,8 @@
             var gesamtbetrag = 0.00;
             var auswahlbetrag = 0.0;
             var gesamtabrechnen = true;
+
+                   
             
             function addAuswahl(artikelid){
                 for(var i = 0; i < bestellung.length; i++){
@@ -182,6 +184,8 @@
                     newdiv.className = "liste";
                     newdiv.id = `artikelid-${artikelId}`;
                     newdiv.setAttribute('onClick', `addAuswahl(${artikelId})`);
+                    //newdiv.setAttribute('ontouchstart', `touchstart(${artikelId})`);
+                    //newdiv.setAttribute('ontouchend', `touchend(${artikelId})`);
 
                     var auswahlanzahl = document.createElement("p");
                     auswahlanzahl.className = "listeLinks";

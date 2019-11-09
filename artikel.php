@@ -6,6 +6,59 @@
         var tischnummer = sessionStorage.getItem("tischnummer");
         var bediener = localStorage.getItem("bedienername");
 
+        var onlongtouch; 
+        var timer;
+        var touchduration = 500; //length of time we want the user to touch before we do something
+        var touchArtikelId;
+
+        function touchstart(artikelId) {
+            timer = setTimeout(onlongtouch, touchduration); 
+            touchArtikelId = artikelId;
+        }
+
+        function touchend() {
+
+            //stops short touches from firing the event
+            if (timer)
+                clearTimeout(timer); // clearTimeout, not cleartimeout..
+        }
+
+        function onlongtouch() { 
+            removeArtikel(touchArtikelId);
+        };
+
+        function removeArtikel(artikelId){
+            
+            var anzahlArtikel = parseInt(document.getElementById(`anzahlArtikel${artikelId}`).innerHTML);
+            if(anzahlArtikel == 1){
+                //-> Aus bestellung entfernen
+                document.getElementById(`anzahlArtikel${artikelId}`).innerHTML = "";
+                for(var i = 0; i < bestellung.length; i++){
+                    if(bestellung[i][0] == artikelId){
+                        bestellung.splice(i, 1);
+                        break;
+                    }
+                }
+            }
+            else if(anzahlArtikel > 1){
+                document.getElementById(`anzahlArtikel${artikelId}`).innerHTML = anzahlArtikel - 1;
+                for(var i = 0; i < bestellung.length; i++){
+                    if(bestellung[i][0] == artikelId){
+                        bestellung[i][4] = parseInt(bestellung[i][4]) - 1;
+                        break;
+                    }
+                }
+            }  
+            
+            //Wäre vermutlich sinnvoller den Gesamtbetrag nicht jedes mal neu zu berechnen...
+            var gesamtbetrag = 0.0;
+            for(var i = 0; i < bestellung.length; i++){
+                gesamtbetrag += (bestellung[i][3] * bestellung[i][4]); //Preis * Anzahl
+            }
+            document.getElementById('gesamtbetrag').innerHTML = `Gesamtbetrag: ${gesamtbetrag.toFixed(2)}&euro;`;
+            sessionStorage.setItem("gesamtbetrag", gesamtbetrag.toFixed(2));
+        }
+
         function addArtikel(artikelId){
             // Bestellung - Array Aufbau:
             // ArtikelID  Bezeichnung  Menge  Preis  Anzahl Auswahl Typ
@@ -90,7 +143,7 @@
                 $artikelliste = file('artikelliste.txt');
                 for($i=0; $i < count($artikelliste); $i++){
                     $arr = explode(',', $artikelliste[$i]);
-                    echo   '<div onclick="addArtikel(\'' . $i . '\')" id="artikel' . $i . '" class="artikel" style="background-color: ' . $arr[3] . '">
+                    echo   '<div ontouchstart="touchstart(' . $i . ')" ontouchend="touchend(' . $i . ')" onclick="addArtikel(\'' . $i . '\')" id="artikel' . $i . '" class="artikel" style="background-color: ' . $arr[3] . '">
                             <div id="bezeichnung' . $i . '" class="bezeichnung">' . $arr[0] . '</div>
                             <div id="menge' . $i . '" class="menge">' . $arr[1] . '</div>
                             <div id="preis' . $i . '" class="preis">' . $arr[2] . '&euro;</div>
