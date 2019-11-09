@@ -100,8 +100,6 @@ $content
 </s:Envelope>
 EOD;
 
-file_put_contents("xml.xml", $request);
-
 //Initiate cURL
 $curl = curl_init($url);
  
