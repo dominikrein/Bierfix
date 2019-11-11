@@ -52,7 +52,7 @@
                 var zurueck = document.getElementById("zurueck");   
                 
                 if(gegeben.value != "" && betrag.value != ""){
-                    zurueck.value = gegeben.value - betrag.value;
+                    zurueck.value = (gegeben.value - betrag.value).toFixed(2);
                 }                
             }
 
@@ -63,7 +63,7 @@
                 var zurueck = document.getElementById("zurueck");   
                 
                 if(betrag.value != "" && gegeben.value != ""){
-                    zurueck.value = gegeben.value - betrag.value;
+                    zurueck.value = (gegeben.value - betrag.value).toFixed(2);
                 }                
             }
 
