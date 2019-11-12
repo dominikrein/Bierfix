@@ -6,9 +6,9 @@
         <link rel="stylesheet" href="css/bootstrap.min.css">
         <link rel="stylesheet" href="css/bierfix.css">     
         <title>Bierfix</title>
-        
+        <script src="artikelliste.js"></script>
     </head>
-    <body class="">
+    <body class="bg-light">
         
         <div class="container sticky-top bg-dark">
             <div id="standard-header">
@@ -32,10 +32,10 @@
 
                 <h1 class="display-4">Bierfix</h1>
                 <ul class="list-group">
-                    <button type="button" onclick="btnNewTable_onClick()" class="btn btn-success my-2 py-4">Neuer Tisch</button>
-                    <button type="button" class="btn btn-primary my-2 py-4">Tisch aufrufen</button>
-                    <button type="button" class="btn btn-info my-2 py-4">Taschenrechner</button>
-                    <button type="button" onClick="btnSettings_onClick()" class="btn btn-secondary mt-2 mb-3">Einstellungen</button>
+                    <button type="button" onclick="btnNewTable_onClick()" class="btn btn-success my-2 py-4 shadow-sm">Neuer Tisch</button>
+                    <button type="button" class="btn btn-primary my-2 py-4 shadow-sm">Tisch aufrufen</button>
+                    <button type="button" class="btn btn-info my-2 py-4 shadow-sm">Taschenrechner</button>
+                    <button type="button" onClick="btnSettings_onClick()" class="btn btn-secondary mt-2 mb-3 shadow-sm">Einstellungen</button>
                 </ul>                
             </div>
             <!-- Ende Hauptmenü Content -->
@@ -71,7 +71,9 @@
             <!-- Ende Einstellungen Content -->
             <!-- Artikel Content -->
             <div id="artikel-content" style="display:none;">
-                <p>Artikel</p>
+                <div id="artikelGridContainer">
+                    
+                </div>
             </div>
             <!-- Ende Artikel Content -->
         </div>

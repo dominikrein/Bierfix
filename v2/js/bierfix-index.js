@@ -32,6 +32,38 @@ function frmNewTable_onSubmit(){
     return false; //Damit form keinen reload macht
 }
 
+function printArtikel(){
+    var artikelGridContainer = document.getElementById("artikelGridContainer");
+    var counter = 0;
+    var spalten = 4;
+    var currentRow = document.createElement("div");
+    currentRow.className = "row";
+
+    for(var artikelId in artikelliste){
+        // skip loop if the property is from prototype
+        if (!artikelliste.hasOwnProperty(artikelId)) continue;
+
+        var artikel = artikelliste[artikelId];
+
+        if(counter > 0 && counter % spalten == 0){
+            //Neue Reihe
+            artikelGridContainer.appendChild(currentRow);
+            currentRow = document.createElement("div");
+            currentRow.className = "row";                       
+        }
+
+        var newArtikel = document.createElement("div");
+        newArtikel.className = "col";
+        
+        var bezeichnung = document.createElement("p");
+        bezeichnung.id = "artikelBezeichnung";
+        bezeichnung.innerHTML = artikel.bezeichnung;
+
+        newArtikel.appendChild(bezeichnung);        
+    }
+    artikelGridContainer.appendChild(currentRow);
+}
+
 function changeView(newView){
     switch(newView){
         case "artikel":     document.getElementById("hauptmenue-content").style.display = "none";
