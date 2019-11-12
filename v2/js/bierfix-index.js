@@ -29,6 +29,7 @@ function settings_btnZurueck_onClick(){
 
 function frmNewTable_onSubmit(){
     changeView("artikel");
+    printArtikel();
     return false; //Damit form keinen reload macht
 }
 
@@ -37,29 +38,43 @@ function printArtikel(){
     var counter = 0;
     var spalten = 4;
     var currentRow = document.createElement("div");
-    currentRow.className = "row";
+    var artikelclass = "my-2";
+    currentRow.className = "row text-center";
 
     for(var artikelId in artikelliste){
         // skip loop if the property is from prototype
         if (!artikelliste.hasOwnProperty(artikelId)) continue;
 
         var artikel = artikelliste[artikelId];
+        
 
         if(counter > 0 && counter % spalten == 0){
             //Neue Reihe
             artikelGridContainer.appendChild(currentRow);
             currentRow = document.createElement("div");
-            currentRow.className = "row";                       
+            currentRow.className = "row text-center";                       
         }
 
         var newArtikel = document.createElement("div");
-        newArtikel.className = "col";
+        newArtikel.className = "col px-1 border rounded";
         
         var bezeichnung = document.createElement("p");
-        bezeichnung.id = "artikelBezeichnung";
         bezeichnung.innerHTML = artikel.bezeichnung;
+        bezeichnung.className = artikelclass;
+        newArtikel.appendChild(bezeichnung); 
 
-        newArtikel.appendChild(bezeichnung);        
+        var details = document.createElement("p");
+        details.innerHTML = artikel.details;
+        details.className = artikelclass;
+        newArtikel.appendChild(details); 
+
+        var preis = document.createElement("p");
+        preis.innerHTML = artikel.preis;
+        preis.className = artikelclass;
+        newArtikel.appendChild(preis);
+        
+        currentRow.appendChild(newArtikel);       
+        counter++;
     }
     artikelGridContainer.appendChild(currentRow);
 }
