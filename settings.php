@@ -2,7 +2,8 @@
 <html>
     <head>
         <title>Einstellungen - Bierfix</title>
-        <?php include 'header.php'; ?>
+        <?php 
+		include 'header.php'; ?>
         <script>
             function saveBediener(){
                 localStorage.setItem("bedienername", document.getElementById("bediener").value);
