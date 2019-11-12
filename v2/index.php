@@ -41,13 +41,13 @@
             <!-- Ende Hauptmenü Content -->
 
             <!-- Neuer Tisch Content -->
-            <div id="neuerTisch-content" class="d-none">
-                <h1 class="display-4 text-center">Einstellungen</h1>
-                <form onsubmit="frmSettings_onSubmit()">
+            <div id="neuerTisch-content" class="text-center" style="display:none;">
+                <h1 class="display-4 text-center">Neuer Tisch</h1>
+                <form action="" onsubmit="return frmNewTable_onSubmit()">
                     <div class="form-group">
-                        <label for="bedienerName">Bedienername</label>
-                        <input type="text" class="form-control" id="bedienerName" aria-describedby="bedienerNameHelp" placeholder="Dein Name" required>
-                        <small id="bedienerNameHelp" class="form-text text-muted">Dieser Name erscheint auf dem Bon.</small>
+                        <label for="bedienerName">Tischnummer</label>
+                        <input type="number" class="form-control" id="inputTischnummer" aria-describedby="inputTischnummerHelp" required>
+                        <small id="inputTischnummerHelp" class="form-text text-muted">Nummer des aufzunehmenden Tisches</small>
                     </div>  
                     <button type="button" onclick="settings_btnZurueck_onClick()" class="btn btn-secondary">Zur&uuml;ck</button>                  
                     <button type="submit" class="btn btn-primary">Best&auml;tigen</button>
@@ -69,12 +69,15 @@
                 </form>
             </div>
             <!-- Ende Einstellungen Content -->
+            <!-- Artikel Content -->
+            <div id="artikel-content" style="display:none;">
+                <p>Artikel</p>
+            </div>
+            <!-- Ende Artikel Content -->
         </div>
         <div class="container fixed-bottom bg-dark">
             <div id="hauptmenue-footer">
                 <p class="mb-1 text-white text-center"><strong>Bierfix 1.0</strong><br>Freiw. Feuerwehr Abt. &Ouml;schingen</p>
-            </div>
-            <div id="neuerTisch-footer">
             </div>
         </div>     
 

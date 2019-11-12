@@ -1,7 +1,3 @@
-window.onbeforeunload = function(){
-    return "Nicht neu laden!";
-}
-
 function btnNewTable_onClick(){
     if("bedienerName" in localStorage){
         changeView("newTable");
@@ -31,20 +27,34 @@ function settings_btnZurueck_onClick(){
     changeView("hauptmenue");
 }
 
+function frmNewTable_onSubmit(){
+    changeView("artikel");
+    return false; //Damit form keinen reload macht
+}
+
 function changeView(newView){
     switch(newView){
+        case "artikel":     document.getElementById("hauptmenue-content").style.display = "none";
+                            document.getElementById("artikel-content").style.display = "block";
+                            document.getElementById("neuerTisch-content").style.display = "none";
+                            document.getElementById("einstellungen-content").style.display = "none";
+                            break;
+
         case "settings":    document.getElementById("hauptmenue-content").style.display = "none";
+                            document.getElementById("artikel-content").style.display = "none";
                             document.getElementById("neuerTisch-content").style.display = "none";
                             document.getElementById("einstellungen-content").style.display = "block";
                             break;
 
         case "newTable":    document.getElementById("hauptmenue-content").style.display = "none";
+                            document.getElementById("artikel-content").style.display = "none";
                             document.getElementById("neuerTisch-content").style.display = "block";
                             document.getElementById("einstellungen-content").style.display = "none";
                             break;
 
         default:
         case "hauptmenue":  document.getElementById("hauptmenue-content").style.display = "block";
+                            document.getElementById("artikel-content").style.display = "none";
                             document.getElementById("neuerTisch-content").style.display = "none";
                             document.getElementById("einstellungen-content").style.display = "none";
                             break;
