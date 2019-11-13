@@ -38,7 +38,12 @@ function printArtikel(){
     var counter = 0;
     var spalten = 4;
     var currentRow = document.createElement("div");
-    var artikelclass = "my-2";
+    //Wieviele der möglichen 12 Spalten sollen benutzt werden?
+    var colcount = 12 / spalten;
+    //Damit die Textgröße responsive ist wird viewport benutzt. Breite der einzelnen Spalte nehmen (berechnen hat nicht geklappt :-D):
+    var artikelFontSize = `${spalten}vw`;
+
+    var artikelclass = "my-1";
     currentRow.className = "row text-center";
 
     for(var artikelId in artikelliste){
@@ -56,21 +61,25 @@ function printArtikel(){
         }
 
         var newArtikel = document.createElement("div");
-        newArtikel.className = "col px-1 border rounded";
+        newArtikel.className = `col-${colcount} px-1 border border-light rounded`;
+        newArtikel.style.backgroundColor = artikel.farbe;
         
         var bezeichnung = document.createElement("p");
-        bezeichnung.innerHTML = artikel.bezeichnung;
+        bezeichnung.innerHTML = `<strong>${artikel.bezeichnung}</strong>`;
         bezeichnung.className = artikelclass;
+        bezeichnung.style.fontSize = artikelFontSize;
         newArtikel.appendChild(bezeichnung); 
 
         var details = document.createElement("p");
         details.innerHTML = artikel.details;
         details.className = artikelclass;
+        details.style.fontSize = artikelFontSize;
         newArtikel.appendChild(details); 
 
         var preis = document.createElement("p");
         preis.innerHTML = artikel.preis;
         preis.className = artikelclass;
+        preis.style.fontSize = artikelFontSize;
         newArtikel.appendChild(preis);
         
         currentRow.appendChild(newArtikel);       
