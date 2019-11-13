@@ -2,7 +2,9 @@
 <html lang="de">
     <head>
         <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, maximum-scale=1, user-scalable=0">
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black" />
         <link rel="stylesheet" href="css/bootstrap.min.css">
         <link rel="stylesheet" href="css/bierfix.css">     
         <title>Bierfix</title>
@@ -14,8 +16,9 @@
             <div id="standard-header">
                 <p id="standard-header-p" class="text-white text-center">Willkommen!</p>
             </div>
-            <div id="neuerTisch-header">
-
+            <div id="info-header">
+                <p id="headerBedienung-p" class="text-white text-left font-weight-bold"></p>
+                <p id="headerTisch-p" class="text-white text-right font-weight-bold"></p>
             </div>
             
         </div>
@@ -70,16 +73,37 @@
             </div>
             <!-- Ende Einstellungen Content -->
             <!-- Artikel Content -->
-            <div id="artikel-content" style="display:none;">
-                <div id="artikelGridContainer">
-                    
+            <div id="artikel-content" class="noSelect" style="display:none;">
+                <div id="artikelGridContainer">                    
                 </div>
             </div>
             <!-- Ende Artikel Content -->
+            <!-- Übersicht Content -->
+            <div id="uebersicht-content" class="noSelect" style="display:none;">
+
+            </div>
+            <!-- Ende Übersicht Content -->
         </div>
         <div class="container fixed-bottom bg-dark">
-            <div id="hauptmenue-footer">
+            <div id="hauptmenue-footer" style="display:block;">
                 <p class="mb-1 text-white text-center"><strong>Bierfix 1.0</strong><br>Freiw. Feuerwehr Abt. &Ouml;schingen</p>
+            </div>
+            <div id="artikel-footer" style="display:none;">
+                <button type="button" onclick="artikel_btnZurueck_onClick()" class="btn my-1 btn-warning">Zur&uuml;ck</button>                  
+                <button type="button" onclick="artikel_btnUebersicht_onClick()" class="btn my-1 float-right btn-success">&Uuml;bersicht</button>
+            </div>
+            <div id="uebersicht-footer" style="display:none;">
+                    <button type="button" onclick="uebersicht_btnZurueck_onClick()" class="btn my-1 btn-warning">Zur&uuml;ck</button>  
+                     
+                <div class="btn-group float-right ml-2">
+                    <button type="button" onclick="uebersicht_btnAuswahl_onClick()" class="btn float-right my-1 btn-info">Auswahl</button>
+                    <button type="button" onclick="uebersicht_btnGesamt_onClick()" class="btn float-right my-1 btn-success">Gesamt</button>
+                </div>
+
+                <button type="button" onclick="uebersicht_btnDrucken_onClick()" class="btn my-1 float-right btn-danger">
+                        <img src="img/print-3x.png" style="filter: invert(1); height: 3vw;" >
+                </button>   
+                                
             </div>
         </div>     
 
