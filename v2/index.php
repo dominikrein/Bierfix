@@ -13,12 +13,12 @@
     <body class="bg-light">
         
         <div class="container sticky-top bg-dark">
-            <div id="standard-header">
-                <p id="standard-header-p" class="text-white text-center">Willkommen!</p>
+            <div id="standard-header" class="clearfix">
+                <p id="standard-header-p" class="text-white text-center mb-0">Willkommen!</p>
             </div>
-            <div id="info-header">
-                <p id="headerBedienung-p" class="text-white text-left font-weight-bold"></p>
-                <p id="headerTisch-p" class="text-white text-right font-weight-bold"></p>
+            <div id="info-header" class="clearfix">
+                <div class="float-left"><p id="headerBedienung-p" class="text-info text-left font-weight-bold my-1"></p></div>
+                <div class="float-right"><p id="headerTisch-p" class="text-warning text-right font-weight-bold my-1"></p></div>
             </div>
             
         </div>
@@ -49,7 +49,7 @@
                 <form action="" onsubmit="return frmNewTable_onSubmit()">
                     <div class="form-group">
                         <label for="bedienerName">Tischnummer</label>
-                        <input type="number" class="form-control" id="inputTischnummer" aria-describedby="inputTischnummerHelp" required>
+                        <input type="number" class="form-control" id="inputTischnummer" aria-describedby="inputTischnummerHelp" autofocus required>
                         <small id="inputTischnummerHelp" class="form-text text-muted">Nummer des aufzunehmenden Tisches</small>
                     </div>  
                     <button type="button" onclick="settings_btnZurueck_onClick()" class="btn btn-secondary">Zur&uuml;ck</button>                  
@@ -80,7 +80,8 @@
             <!-- Ende Artikel Content -->
             <!-- Übersicht Content -->
             <div id="uebersicht-content" class="noSelect" style="display:none;">
-
+                <div id="uebersicht-liste">
+                </div>
             </div>
             <!-- Ende Übersicht Content -->
         </div>
@@ -92,17 +93,23 @@
                 <button type="button" onclick="artikel_btnZurueck_onClick()" class="btn my-1 btn-warning">Zur&uuml;ck</button>                  
                 <button type="button" onclick="artikel_btnUebersicht_onClick()" class="btn my-1 float-right btn-success">&Uuml;bersicht</button>
             </div>
+            
             <div id="uebersicht-footer" style="display:none;">
-                    <button type="button" onclick="uebersicht_btnZurueck_onClick()" class="btn my-1 btn-warning">Zur&uuml;ck</button>  
-                     
-                <div class="btn-group float-right ml-2">
-                    <button type="button" onclick="uebersicht_btnAuswahl_onClick()" class="btn float-right my-1 btn-info">Auswahl</button>
-                    <button type="button" onclick="uebersicht_btnGesamt_onClick()" class="btn float-right my-1 btn-success">Gesamt</button>
+                <div>
+                    <p class="text-right mb-1">Gesamt</p>
                 </div>
+                <div>
+                    <button type="button" onclick="uebersicht_btnZurueck_onClick()" class="btn my-1 btn-warning">Zur&uuml;ck</button>  
+                        
+                    <div class="btn-group float-right ml-2">
+                        <button type="button" onclick="uebersicht_btnAuswahl_onClick()" class="btn float-right my-1 btn-info">Auswahl</button>
+                        <button type="button" onclick="uebersicht_btnGesamt_onClick()" class="btn float-right my-1 btn-success">Gesamt</button>
+                    </div>
 
-                <button type="button" onclick="uebersicht_btnDrucken_onClick()" class="btn my-1 float-right btn-danger">
-                        <img src="img/print-3x.png" style="filter: invert(1); height: 3vw;" >
-                </button>   
+                    <button type="button" onclick="uebersicht_btnDrucken_onClick()" class="btn my-1 float-right btn-danger">
+                            <img src="img/print-3x.png" style="filter: invert(1); height: 3vw;" >
+                    </button>
+                </div>   
                                 
             </div>
         </div>     

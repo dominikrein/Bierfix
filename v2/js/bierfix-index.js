@@ -1,4 +1,5 @@
 var touchArtikelId;
+var uebersichtId;
 var timer;
 var touchduration = 500; 
 var info = {
@@ -44,8 +45,8 @@ function frmNewTable_onSubmit(){
     info.bediener = localStorage.getItem("bedienerName");
     info.tischnummer = document.getElementById("inputTischnummer").value;
 
-    document.getElementById("headerBedienung-p").innerHTML = info.bediener;    
-    document.getElementById("headerTisch-p").innerHTML = info.tischnummer;
+    document.getElementById("headerBedienung-p").innerHTML = `Bediener: ${info.bediener}`;
+    document.getElementById("headerTisch-p").innerHTML = `Tisch: ${info.tischnummer}`;
     
     changeView("artikel");
     printArtikel();
@@ -136,6 +137,84 @@ function printArtikel(){
     artikelGridContainer.appendChild(currentRow);
 }
 
+function uebersichtLoad(){
+    var uebersichtListe = document.getElementById("uebersicht-liste");
+    uebersichtListe.innerHTML = ""; //Reset
+
+    for(var artikelId in artikelliste){
+        // skip loop if the property is from prototype
+        if (!artikelliste.hasOwnProperty(artikelId)) continue;
+
+        var artikel = artikelliste[artikelId];
+
+        if("anzahl" in artikel && artikel.anzahl > 0){
+            var newArtikel = document.createElement("p");
+            newArtikel.className = `container my-2 py-2 font-weight-bolder text-white border border-light rounded bg-secondary`;
+            newArtikel.setAttribute("onClick", `uebersichtOnClick(${artikelId})`);
+            newArtikel.setAttribute("onTouchStart", `uebersichtOnTouchStart(${artikelId})`);
+            newArtikel.setAttribute("onTouchEnd", "uebersichtOnTouchEnd()");
+        
+            newArtikel.innerHTML = `${artikel.anzahl}x ${artikel.bezeichnung}`;
+            if("auswahl" in artikel && artikel.auswahl > 0){
+                newArtikel.innerHTML = `${artikel.auswahl}/${artikel.anzahl}x ${artikel.bezeichnung}`;
+            }
+            uebersichtListe.appendChild(newArtikel); 
+        }             
+    }
+}
+
+function uebersichtOnTouchStart(artikelId){
+    timer = setTimeout(uebersichtLongTouch, touchduration); 
+    uebersichtId = artikelId;
+}
+function uebersichtOnTouchEnd(){
+    //stops short touches from firing the event
+    if (timer)
+    clearTimeout(timer);
+}
+function uebersichtLongTouch(){
+    decreaseUebersichtCounter(uebersichtId);
+}
+
+function decreaseUebersichtCounter(id){
+    if("auswahl" in artikelliste[id]){
+        if(artikelliste[id].auswahl > 0){
+            artikelliste[id].auswahl--;
+        }
+    }
+        
+    //Neu Laden
+    uebersichtLoad();
+}
+
+function resetAuswahl(){
+    for(var artikelId in artikelliste){
+        // skip loop if the property is from prototype
+        if (!artikelliste.hasOwnProperty(artikelId)) continue;
+
+        var artikel = artikelliste[artikelId];
+        if("auswahl" in artikel && artikel.auswahl > 0){
+            artikel.auswahl = 0;
+        }
+    }
+}
+
+function uebersichtOnClick(artikelId){
+    if("auswahl" in artikelliste[artikelId]){
+        if(artikelliste[artikelId].auswahl < artikelliste[artikelId].anzahl){
+            artikelliste[artikelId].auswahl++;
+        }
+    }
+    else{
+        if(artikelliste[artikelId].anzahl >= 1){
+            artikelliste[artikelId].auswahl = 1;
+        }
+    }
+    
+    //Neu Laden
+    uebersichtLoad();
+}
+
 
 function artikelOnTouchStart(artikelId){
     timer = setTimeout(artikelLongTouch, touchduration); 
@@ -183,7 +262,9 @@ function newTableLoad(){
 
 function changeView(newView){
     switch(newView){
-        case "uebersicht":  document.getElementById("info-header").style.display = "block";
+        case "uebersicht":  resetAuswahl();
+                            uebersichtLoad();                            
+                            document.getElementById("info-header").style.display = "block";
                             document.getElementById("standard-header").style.display = "none";
                             document.getElementById("hauptmenue-content").style.display = "none";
                             document.getElementById("artikel-content").style.display = "none";
