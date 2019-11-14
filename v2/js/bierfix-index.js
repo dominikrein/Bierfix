@@ -6,6 +6,7 @@ var info = {
     "tischnummer": "",
     "bediener": ""
 }
+var mode_taschenrechner = false;
 
 function btnNewTable_onClick(){
     if("bedienerName" in localStorage){
@@ -22,6 +23,9 @@ function btnSettings_onClick(){
     if("bedienerName" in localStorage){
         document.getElementById("bedienerName").value = localStorage.getItem("bedienerName");
     }
+    if("spaltenAnzahl" in localStorage){
+        document.getElementById("spaltenAnzahl").value = localStorage.getItem("spaltenAnzahl");
+    }
 
     //Settings öffnen
     changeView("settings");
@@ -29,6 +33,7 @@ function btnSettings_onClick(){
 
 function frmSettings_onSubmit(){
     localStorage.setItem("bedienerName", document.getElementById("bedienerName").value);
+    localStorage.setItem("spaltenAnzahl", document.getElementById("spaltenAnzahl").value);
     changeView("hauptmenue");
 }
 
@@ -41,15 +46,16 @@ function artikel_btnZurueck_onClick(){
     changeView("hauptmenue");
 }
 
-function frmNewTable_onSubmit(){
+function printInfoHeader(){
     info.bediener = localStorage.getItem("bedienerName");
     info.tischnummer = document.getElementById("inputTischnummer").value;
 
     document.getElementById("headerBedienung-p").innerHTML = `Bediener: ${info.bediener}`;
     document.getElementById("headerTisch-p").innerHTML = `Tisch: ${info.tischnummer}`;
-    
+}
+
+function frmNewTable_onSubmit(){   
     changeView("artikel");
-    printArtikel();
     return false; //Damit form keinen reload macht
 }
 
@@ -78,11 +84,16 @@ function printArtikel(){
     artikelGridContainer.innerHTML = ""; //Reset
     var counter = 0;
     var spalten = 4;
+    if("spaltenAnzahl" in localStorage){
+        spalten = localStorage.getItem("spaltenAnzahl");
+    }
+    
     var currentRow = document.createElement("div");
     //Wieviele der möglichen 12 Spalten sollen benutzt werden?
     var colcount = 12 / spalten;
     //Damit die Textgröße responsive ist wird viewport benutzt. Breite der einzelnen Spalte nehmen (berechnen hat nicht geklappt :-D):
     var artikelFontSize = `${spalten}vw`;
+    var taschenrechner_gesamtbetrag = 0;
 
     var artikelclass = "my-1";
     currentRow.className = "row text-center";
@@ -111,6 +122,7 @@ function printArtikel(){
         var bezeichnung = document.createElement("p");
         if("anzahl" in artikel && artikel.anzahl > 0){
             bezeichnung.innerHTML = `<strong>${artikel.anzahl}x ${artikel.bezeichnung}</strong>`;
+            taschenrechner_gesamtbetrag += (artikel.preis * artikel.anzahl);
         }
         else{
             bezeichnung.innerHTML = `<strong>${artikel.bezeichnung}</strong>`;
@@ -135,11 +147,14 @@ function printArtikel(){
         counter++;
     }
     artikelGridContainer.appendChild(currentRow);
+    document.getElementById("tr-gesamt-p").innerHTML = `Gesamt: ${taschenrechner_gesamtbetrag.toFixed(2)}&euro;`;
 }
 
 function uebersichtLoad(){
     var uebersichtListe = document.getElementById("uebersicht-liste");
     uebersichtListe.innerHTML = ""; //Reset
+    var gesamtbetrag = 0;
+    var auswahlbetrag = 0;
 
     for(var artikelId in artikelliste){
         // skip loop if the property is from prototype
@@ -149,18 +164,22 @@ function uebersichtLoad(){
 
         if("anzahl" in artikel && artikel.anzahl > 0){
             var newArtikel = document.createElement("p");
-            newArtikel.className = `container my-2 py-2 font-weight-bolder text-white border border-light rounded bg-secondary`;
+            newArtikel.className = `uebersichtEm container my-2 py-2 font-weight-bolder text-white border border-light rounded bg-dark`;
             newArtikel.setAttribute("onClick", `uebersichtOnClick(${artikelId})`);
             newArtikel.setAttribute("onTouchStart", `uebersichtOnTouchStart(${artikelId})`);
             newArtikel.setAttribute("onTouchEnd", "uebersichtOnTouchEnd()");
+            gesamtbetrag += (artikel.preis * artikel.anzahl);
         
             newArtikel.innerHTML = `${artikel.anzahl}x ${artikel.bezeichnung}`;
             if("auswahl" in artikel && artikel.auswahl > 0){
-                newArtikel.innerHTML = `${artikel.auswahl}/${artikel.anzahl}x ${artikel.bezeichnung}`;
+                newArtikel.innerHTML = `<em>${artikel.auswahl}/</em>${artikel.anzahl}x ${artikel.bezeichnung}`;
+                auswahlbetrag += (artikel.preis * artikel.auswahl);
             }
             uebersichtListe.appendChild(newArtikel); 
         }             
     }
+    document.getElementById("auswahlbetrag-p").innerHTML = `Auswahl: ${auswahlbetrag.toFixed(2)}&euro;`;
+    document.getElementById("gesamtbetrag-p").innerHTML = `Gesamt: ${gesamtbetrag.toFixed(2)}&euro;`;
 }
 
 function uebersichtOnTouchStart(artikelId){
@@ -197,6 +216,10 @@ function resetAuswahl(){
             artikel.auswahl = 0;
         }
     }
+}
+
+function btnTaschenrechner_onClick(){
+    changeView("taschenrechner");
 }
 
 function uebersichtOnClick(artikelId){
@@ -258,14 +281,54 @@ function decreaseArtikelCounter(artikelId){
 
 function newTableLoad(){
     document.getElementById("inputTischnummer").value = "";
+    document.getElementById("inputTischnummer").focus();
+}
+
+function showRueckgeldrechner(){
+    changeView("rueckgeldrechner");
 }
 
 function changeView(newView){
     switch(newView){
+        case "rueckgeldrechner":document.getElementById("rueckgeldrechner").style.display = "block";
+                                document.getElementById("info-header").style.display = "none";
+                                document.getElementById("standard-header").style.display = "none";
+                                document.getElementById("taschenrechner-header").style.display = "none";
+                                document.getElementById("hauptmenue-content").style.display = "none";
+                                document.getElementById("artikel-content").style.display = "none";
+                                document.getElementById("neuerTisch-content").style.display = "none";
+                                document.getElementById("einstellungen-content").style.display = "none";
+                                document.getElementById("uebersicht-content").style.display = "none";
+                                document.getElementById("uebersicht-footer").style.display = "none";
+                                document.getElementById("artikel-footer").style.display = "none";
+                                document.getElementById("hauptmenue-footer").style.display = "none";
+                                document.getElementById("taschenrechner-footer").style.display = "block";
+                                break;
+
+        case "taschenrechner":  printArtikel();
+                                printInfoHeader();
+                                mode_taschenrechner = true;
+                                document.getElementById("rueckgeldrechner").style.display = "none";
+                                document.getElementById("info-header").style.display = "none";
+                                document.getElementById("taschenrechner-header").style.display = "block";
+                                document.getElementById("standard-header").style.display = "none";
+                                document.getElementById("hauptmenue-content").style.display = "none";
+                                document.getElementById("artikel-content").style.display = "block";
+                                document.getElementById("neuerTisch-content").style.display = "none";
+                                document.getElementById("einstellungen-content").style.display = "none";
+                                document.getElementById("uebersicht-content").style.display = "none";
+                                document.getElementById("uebersicht-footer").style.display = "none";
+                                document.getElementById("artikel-footer").style.display = "none";
+                                document.getElementById("hauptmenue-footer").style.display = "none";
+                                document.getElementById("taschenrechner-footer").style.display = "block";
+                                break;
+
         case "uebersicht":  resetAuswahl();
                             uebersichtLoad();                            
+                            document.getElementById("rueckgeldrechner").style.display = "none";
                             document.getElementById("info-header").style.display = "block";
                             document.getElementById("standard-header").style.display = "none";
+                            document.getElementById("taschenrechner-header").style.display = "none";
                             document.getElementById("hauptmenue-content").style.display = "none";
                             document.getElementById("artikel-content").style.display = "none";
                             document.getElementById("neuerTisch-content").style.display = "none";
@@ -274,10 +337,16 @@ function changeView(newView){
                             document.getElementById("uebersicht-footer").style.display = "block";
                             document.getElementById("artikel-footer").style.display = "none";
                             document.getElementById("hauptmenue-footer").style.display = "none";
+                            document.getElementById("taschenrechner-footer").style.display = "none";
                             break;
                             
-        case "artikel":     document.getElementById("info-header").style.display = "block";
+        case "artikel":     printArtikel();
+                            printInfoHeader();
+                            mode_taschenrechner = false;
+                            document.getElementById("rueckgeldrechner").style.display = "none";
+                            document.getElementById("info-header").style.display = "block";
                             document.getElementById("standard-header").style.display = "none";
+                            document.getElementById("taschenrechner-header").style.display = "none";
                             document.getElementById("hauptmenue-content").style.display = "none";
                             document.getElementById("artikel-content").style.display = "block";
                             document.getElementById("neuerTisch-content").style.display = "none";
@@ -286,10 +355,13 @@ function changeView(newView){
                             document.getElementById("uebersicht-footer").style.display = "none";
                             document.getElementById("artikel-footer").style.display = "block";
                             document.getElementById("hauptmenue-footer").style.display = "none";
+                            document.getElementById("taschenrechner-footer").style.display = "none";
                             break;
 
-        case "settings":    document.getElementById("info-header").style.display = "none";
+        case "settings":    document.getElementById("rueckgeldrechner").style.display = "none";
+                            document.getElementById("info-header").style.display = "none";
                             document.getElementById("standard-header").style.display = "block";
+                            document.getElementById("taschenrechner-header").style.display = "none";
                             document.getElementById("hauptmenue-content").style.display = "none";
                             document.getElementById("artikel-content").style.display = "none";
                             document.getElementById("neuerTisch-content").style.display = "none";
@@ -298,11 +370,14 @@ function changeView(newView){
                             document.getElementById("uebersicht-footer").style.display = "none";
                             document.getElementById("artikel-footer").style.display = "none";
                             document.getElementById("hauptmenue-footer").style.display = "block";
+                            document.getElementById("taschenrechner-footer").style.display = "none";
                             break;
 
         case "newTable":    newTableLoad();
+                            document.getElementById("rueckgeldrechner").style.display = "none";
                             document.getElementById("info-header").style.display = "none";
                             document.getElementById("standard-header").style.display = "block";
+                            document.getElementById("taschenrechner-header").style.display = "none";
                             document.getElementById("hauptmenue-content").style.display = "none";
                             document.getElementById("artikel-content").style.display = "none";
                             document.getElementById("neuerTisch-content").style.display = "block";
@@ -311,11 +386,14 @@ function changeView(newView){
                             document.getElementById("uebersicht-footer").style.display = "none";
                             document.getElementById("artikel-footer").style.display = "none";
                             document.getElementById("hauptmenue-footer").style.display = "block";
+                            document.getElementById("taschenrechner-footer").style.display = "none";
                             break;
 
         default:
-        case "hauptmenue":  document.getElementById("info-header").style.display = "none";
+        case "hauptmenue":  document.getElementById("rueckgeldrechner").style.display = "none";
+                            document.getElementById("info-header").style.display = "none";
                             document.getElementById("standard-header").style.display = "block";
+                            document.getElementById("taschenrechner-header").style.display = "none";
                             document.getElementById("hauptmenue-content").style.display = "block";
                             document.getElementById("artikel-content").style.display = "none";
                             document.getElementById("neuerTisch-content").style.display = "none";
@@ -324,6 +402,7 @@ function changeView(newView){
                             document.getElementById("uebersicht-footer").style.display = "none";
                             document.getElementById("artikel-footer").style.display = "none";
                             document.getElementById("hauptmenue-footer").style.display = "block";
+                            document.getElementById("taschenrechner-footer").style.display = "none";
                             break;
     }
 }
