@@ -56,7 +56,7 @@
                 <form action="" onsubmit="return frmNewTable_onSubmit()">
                     <div class="form-group">
                         <label for="bedienerName">Tischnummer</label>
-                        <input type="number" class="form-control" id="inputTischnummer" aria-describedby="inputTischnummerHelp" autofocus required>
+                        <input type="number" class="form-control" autocomplete="off" id="inputTischnummer" aria-describedby="inputTischnummerHelp" autofocus required>
                         <small id="inputTischnummerHelp" class="form-text text-muted">Nummer des aufzunehmenden Tisches</small>
                     </div>  
                     <button type="button" onclick="settings_btnZurueck_onClick()" class="btn btn-secondary">Zur&uuml;ck</button>                  
@@ -71,7 +71,7 @@
                 <form onsubmit="frmSettings_onSubmit()">
                     <div class="form-group">
                         <label for="bedienerName">Bedienername</label>
-                        <input type="text" class="form-control" id="bedienerName"  placeholder="Dein Name" required>
+                        <input type="text" autocomplete="off" class="form-control" id="bedienerName"  placeholder="Dein Name" required>
                         <small id="bedienerNameHelp" class="form-text text-muted">Dieser Name erscheint auf dem Bon.</small>
                     </div>  
                     <div class="form-group">
@@ -99,32 +99,32 @@
                 </div>
             </div>
             <!-- Ende Übersicht Content -->
-            <!-- Taschenrechner COntent -->
-            <div id="rueckgeldrechner" class="text-center" style="display:none;">
+            <!-- Rueckgeldrechner COntent -->
+            <div id="rueckgeldrechner" class="text-center px-2 " style="display:none;">
                 <div class="input-group my-3">
                     <div class="input-group-prepend">
                         <span class="input-group-text">Zu Zahlen</span>
                     </div>
-                    <input id="input_zuZahlen" type="number" class="form-control">
+                    <input id="input_zuZahlen" type="number" autocomplete="off" class="form-control input-lg inputBold" onkeyup="rueckgeldrechner_rechnen()">
                 </div>
                 <div class="input-group my-3">
                     <div class="input-group-prepend">
                         <span class="input-group-text">Gegeben</span>
                     </div>
-                    <input id="input_gegeben" type="number" class="form-control">
+                    <input id="input_gegeben" type="number" autocomplete="off" class="form-control input-lg inputBold" onkeyup="rueckgeldrechner_rechnen()" autofocus>
                 </div>
                 <div class="input-group my-3">
                     <div class="input-group-prepend">
                         <span class="input-group-text">R&uuml;ckgeld</span>
                     </div>
-                    <input id="input_rueckgeld" type="number" class="form-control">
+                    <input id="input_rueckgeld" type="number" autocomplete="off" class="form-control input-lg inputBold">
                 </div>
             </div>
-            <!-- Ende Taschenrechner COntent -->
+            <!-- Ende Rueckgeldrechner COntent -->
         </div>
         <div class="container fixed-bottom bg-dark">
             <div id="hauptmenue-footer" style="display:block;">
-                <p class="mb-1 text-white text-center"><strong>Bierfix 1.0</strong><br>Freiw. Feuerwehr Abt. &Ouml;schingen</p>
+                <p class="mb-1 text-white text-center"><strong>Bierfix</strong><br>v1.0</p>
             </div>
             <div id="artikel-footer" style="display:none;">
                 <button type="button" onclick="artikel_btnZurueck_onClick()" class="btn my-1 btn-warning">Zur&uuml;ck</button>                  
@@ -151,9 +151,9 @@
 
             <div id="taschenrechner-footer" class="clearfix" style="display:none;">
                 <div class="clearfix" style="font-size: 1.2rem;">
-                    <button type="button" onclick="changeView()" class="btn my-1 btn-warning float-left">Zur&uuml;ck</button>  
+                    <button type="button" onclick="trFooterzurueck()" class="btn my-1 btn-warning float-left">Zur&uuml;ck</button>  
                     <p id="tr-gesamt-p" class="float-left mb-1 ml-1 text-success font-weight-bold">Gesamt: 0.00&euro;</p>
-                    <button type="button" onclick="showRueckgeldrechner()" class="btn float-right my-1 btn-success">Zahlen</button>
+                    <button type="button" onclick="trFooterZahlen()" class="btn float-right my-1 btn-success">Zahlen</button>
                 </div>
             </div>
         </div>     

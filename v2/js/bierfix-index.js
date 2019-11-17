@@ -1,3 +1,4 @@
+var gesamtbetrag = 0;
 var touchArtikelId;
 var uebersichtId;
 var timer;
@@ -7,6 +8,7 @@ var info = {
     "bediener": ""
 }
 var mode_taschenrechner = false;
+var currentView = "hauptmenue";
 
 function btnNewTable_onClick(){
     if("bedienerName" in localStorage){
@@ -55,6 +57,7 @@ function printInfoHeader(){
 }
 
 function frmNewTable_onSubmit(){   
+    resetArtikel();
     changeView("artikel");
     return false; //Damit form keinen reload macht
 }
@@ -93,7 +96,7 @@ function printArtikel(){
     var colcount = 12 / spalten;
     //Damit die Textgröße responsive ist wird viewport benutzt. Breite der einzelnen Spalte nehmen (berechnen hat nicht geklappt :-D):
     var artikelFontSize = `${spalten}vw`;
-    var taschenrechner_gesamtbetrag = 0;
+    gesamtbetrag = 0;
 
     var artikelclass = "my-1";
     currentRow.className = "row text-center";
@@ -122,7 +125,7 @@ function printArtikel(){
         var bezeichnung = document.createElement("p");
         if("anzahl" in artikel && artikel.anzahl > 0){
             bezeichnung.innerHTML = `<strong>${artikel.anzahl}x ${artikel.bezeichnung}</strong>`;
-            taschenrechner_gesamtbetrag += (artikel.preis * artikel.anzahl);
+            gesamtbetrag += (artikel.preis * artikel.anzahl);
         }
         else{
             bezeichnung.innerHTML = `<strong>${artikel.bezeichnung}</strong>`;
@@ -147,7 +150,7 @@ function printArtikel(){
         counter++;
     }
     artikelGridContainer.appendChild(currentRow);
-    document.getElementById("tr-gesamt-p").innerHTML = `Gesamt: ${taschenrechner_gesamtbetrag.toFixed(2)}&euro;`;
+    document.getElementById("tr-gesamt-p").innerHTML = `Gesamt: ${gesamtbetrag.toFixed(2)}&euro;`;
 }
 
 function uebersichtLoad(){
@@ -218,7 +221,33 @@ function resetAuswahl(){
     }
 }
 
+function resetArtikel(){
+    for(var artikelId in artikelliste){
+        // skip loop if the property is from prototype
+        if (!artikelliste.hasOwnProperty(artikelId)) continue;
+
+        var artikel = artikelliste[artikelId];
+        if("auswahl" in artikel && artikel.auswahl > 0){
+            artikel.auswahl = 0;
+        }
+        if("anzahl" in artikel && artikel.anzahl > 0){
+            artikel.anzahl = 0;
+        }
+    }
+}
+
+function rueckgeldrechner_rechnen(){
+    var betrag = document.getElementById("input_zuZahlen");
+    var gegeben = document.getElementById("input_gegeben"); 
+    var zurueck = document.getElementById("input_rueckgeld");   
+
+    if(gegeben.value != "" && betrag.value != ""){
+        zurueck.value = (gegeben.value - betrag.value).toFixed(2);
+    }    
+}
+
 function btnTaschenrechner_onClick(){
+    resetArtikel();
     changeView("taschenrechner");
 }
 
@@ -285,10 +314,34 @@ function newTableLoad(){
 }
 
 function showRueckgeldrechner(){
+    document.getElementById("input_zuZahlen").value = gesamtbetrag.toFixed(2);
     changeView("rueckgeldrechner");
 }
 
+function trFooterzurueck(){
+    if(currentView == "taschenrechner"){
+        changeView("hauptmenue");
+    }
+    else{
+        //Rueckgeldrechner
+        changeView("taschenrechner")
+    }
+}
+
+function trFooterZahlen(){
+    if(currentView == "taschenrechner"){
+        showRueckgeldrechner();
+    }
+    else{
+        //Rückgeldrechner -> Zahlen fertig
+        changeView("hauptmenue");
+    }
+
+    
+}
+
 function changeView(newView){
+    currentView = newView;
     switch(newView){
         case "rueckgeldrechner":document.getElementById("rueckgeldrechner").style.display = "block";
                                 document.getElementById("info-header").style.display = "none";
@@ -303,6 +356,9 @@ function changeView(newView){
                                 document.getElementById("artikel-footer").style.display = "none";
                                 document.getElementById("hauptmenue-footer").style.display = "none";
                                 document.getElementById("taschenrechner-footer").style.display = "block";
+                                document.getElementById("input_gegeben").focus();
+                                document.getElementById("input_gegeben").value = "";
+                                document.getElementById("input_rueckgeld").value = "";
                                 break;
 
         case "taschenrechner":  printArtikel();
