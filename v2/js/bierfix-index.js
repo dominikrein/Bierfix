@@ -1,4 +1,5 @@
 var gesamtbetrag = 0;
+var auswahlbetrag = 0;
 var touchArtikelId;
 var uebersichtId;
 var timer;
@@ -8,7 +9,53 @@ var info = {
     "bediener": ""
 }
 var mode_taschenrechner = false;
+var mode_teilabrechnen = false;
 var currentView = "hauptmenue";
+
+function bestellungAbschliessen(){
+
+    //create XML to transfer to php
+    var xml_header = "\<?xml version='1.0' standalone='yes'?>";
+    var xml_begin = `<bestellung bediener="${info.bediener}" tischnummer="${info.tischnummer}">`;
+    var xml_content = "";
+     for(var artikelId in artikelliste){
+        // skip loop if the property is from prototype
+        if (!artikelliste.hasOwnProperty(artikelId)) continue;
+
+        var artikel = artikelliste[artikelId];
+        /*  abgerechnet: 1
+            anzahl: 6
+            auswahl: 0
+            bezeichnung: "Radler"
+            details: "0.5l"
+            farbe: "#EE82EE"
+            preis: "2.90"
+            typ: "Getränke" 
+        */
+        xml_content = xml_content + `<artikel id="${artikelId}" bezeichnung="${artikel.bezeichung}" menge="${artikel.details}" preis="${artikel.preis}" anzahl="${artikel.anzahl}" typ="${artikel.typ}" />`;
+     }
+    
+    var xml_end = "</bestellung>";
+    var xml = xml_header + xml_begin + xml_content + xml_end;
+    $.ajax({
+        url: 'php/bestellungsEingang.php',
+        type: 'POST',
+        data: {xml:xml},
+        success: function(data){
+            console.log(data);
+        }
+    });
+    changeView("hauptmenue");
+}
+
+function uebersicht_btnGesamt_onClick(){
+    bestellungAbschliessen();
+}
+
+function uebersicht_btnAuswahl_onClick(){
+    mode_teilabrechnen = true;
+    showRueckgeldrechner(auswahlbetrag);
+}
 
 function btnNewTable_onClick(){
     if("bedienerName" in localStorage){
@@ -121,11 +168,11 @@ function printArtikel(){
         newArtikel.setAttribute("onClick", `artikelOnClick(${artikelId})`);
         newArtikel.setAttribute("onTouchStart", `artikelOnTouchStart(${artikelId})`);
         newArtikel.setAttribute("onTouchEnd", "artikelOnTouchEnd()");
-        
+        var korrigierteAnzahl = artikel.anzahl - (("abgerechnet" in artikel) ? artikel.abgerechnet : 0);
         var bezeichnung = document.createElement("p");
-        if("anzahl" in artikel && artikel.anzahl > 0){
-            bezeichnung.innerHTML = `<strong>${artikel.anzahl}x ${artikel.bezeichnung}</strong>`;
-            gesamtbetrag += (artikel.preis * artikel.anzahl);
+        if("anzahl" in artikel && korrigierteAnzahl > 0){
+            bezeichnung.innerHTML = `<strong>${korrigierteAnzahl}x ${artikel.bezeichnung}</strong>`;
+            gesamtbetrag += (artikel.preis * korrigierteAnzahl);
         }
         else{
             bezeichnung.innerHTML = `<strong>${artikel.bezeichnung}</strong>`;
@@ -157,7 +204,7 @@ function uebersichtLoad(){
     var uebersichtListe = document.getElementById("uebersicht-liste");
     uebersichtListe.innerHTML = ""; //Reset
     var gesamtbetrag = 0;
-    var auswahlbetrag = 0;
+    auswahlbetrag = 0;
 
     for(var artikelId in artikelliste){
         // skip loop if the property is from prototype
@@ -166,16 +213,21 @@ function uebersichtLoad(){
         var artikel = artikelliste[artikelId];
 
         if("anzahl" in artikel && artikel.anzahl > 0){
+            var korrigierteAnzahl = artikel.anzahl - (("abgerechnet" in artikel) ? artikel.abgerechnet : 0);
+            if(korrigierteAnzahl == 0){
+                continue;
+            }
+
             var newArtikel = document.createElement("p");
             newArtikel.className = `uebersichtEm container my-2 py-2 font-weight-bolder text-white border border-light rounded bg-dark`;
             newArtikel.setAttribute("onClick", `uebersichtOnClick(${artikelId})`);
             newArtikel.setAttribute("onTouchStart", `uebersichtOnTouchStart(${artikelId})`);
             newArtikel.setAttribute("onTouchEnd", "uebersichtOnTouchEnd()");
-            gesamtbetrag += (artikel.preis * artikel.anzahl);
+            gesamtbetrag += (artikel.preis * korrigierteAnzahl);
         
-            newArtikel.innerHTML = `${artikel.anzahl}x ${artikel.bezeichnung}`;
+            newArtikel.innerHTML = `${korrigierteAnzahl}x ${artikel.bezeichnung}`;
             if("auswahl" in artikel && artikel.auswahl > 0){
-                newArtikel.innerHTML = `<em>${artikel.auswahl}/</em>${artikel.anzahl}x ${artikel.bezeichnung}`;
+                newArtikel.innerHTML = `<em>${artikel.auswahl}/</em>${korrigierteAnzahl}x ${artikel.bezeichnung}`;
                 auswahlbetrag += (artikel.preis * artikel.auswahl);
             }
             uebersichtListe.appendChild(newArtikel); 
@@ -252,20 +304,22 @@ function btnTaschenrechner_onClick(){
 }
 
 function uebersichtOnClick(artikelId){
-    if("auswahl" in artikelliste[artikelId]){
-        if(artikelliste[artikelId].auswahl < artikelliste[artikelId].anzahl){
-            artikelliste[artikelId].auswahl++;
+    var artikel = artikelliste[artikelId];
+    if(("abgerechnet" in artikel && artikel.abgerechnet < artikel.anzahl) || "auswahl" in artikel){
+        if(artikel.auswahl < artikel.anzahl){
+            artikel.auswahl++;
         }
     }
     else{
-        if(artikelliste[artikelId].anzahl >= 1){
-            artikelliste[artikelId].auswahl = 1;
+        if(artikel.anzahl >= 1){
+            artikel.auswahl = 1;
         }
     }
     
     //Neu Laden
     uebersichtLoad();
 }
+
 
 
 function artikelOnTouchStart(artikelId){
@@ -313,8 +367,8 @@ function newTableLoad(){
     document.getElementById("inputTischnummer").focus();
 }
 
-function showRueckgeldrechner(){
-    document.getElementById("input_zuZahlen").value = gesamtbetrag.toFixed(2);
+function showRueckgeldrechner(betrag){
+    document.getElementById("input_zuZahlen").value = betrag;
     changeView("rueckgeldrechner");
 }
 
@@ -322,22 +376,81 @@ function trFooterzurueck(){
     if(currentView == "taschenrechner"){
         changeView("hauptmenue");
     }
-    else{
+    else if(currentView == "rueckgeldrechner" && mode_taschenrechner == true){
         //Rueckgeldrechner
         changeView("taschenrechner")
+    }
+    else if(currentView == "rueckgeldrechner" && mode_taschenrechner == false){
+        changeView("uebersicht");
     }
 }
 
 function trFooterZahlen(){
     if(currentView == "taschenrechner"){
-        showRueckgeldrechner();
+        showRueckgeldrechner(gesamtbetrag.toFixed(2));
     }
-    else{
-        //Rückgeldrechner -> Zahlen fertig
+    else if(currentView == "rueckgeldrechner" && mode_taschenrechner == true){
+        //Rückgeldrechner vom Taschenrechner -> Zahlen fertig -> Hauptmenü
+        //Eventuell sinnvoller wieder in den Taschenrechner gehen?
         changeView("hauptmenue");
     }
+    else if(currentView == "rueckgeldrechner" && mode_taschenrechner == false){
+        //Uebersicht -> Auswahl oder Gesamt Zahlen fertig
 
-    
+        //Generell soll hier nicht unten der Gesamtbetrag angezeigt werden
+        document.getElementById("tr-gesamt-p").innerHTML = "";
+
+        if(mode_teilabrechnen == true){
+            //Eventuell sind noch nicht alle Artikel abgerechnet
+            for(var artikelId in artikelliste){
+                // skip loop if the property is from prototype
+                if (!artikelliste.hasOwnProperty(artikelId)) continue;
+        
+                var artikel = artikelliste[artikelId];
+                
+                if("anzahl" in artikel && artikel.anzahl > 0 && "auswahl" in artikel && artikel.auswahl > 0){                                     
+                    if("abgerechnet" in artikel){
+                        artikel.abgerechnet += artikel.auswahl;
+                    } 
+                    else{
+                        artikel.abgerechnet = artikel.auswahl;
+                    }                    
+                }             
+            }
+
+            var artikelNochAbrechnenMuss = false;
+            for(var artikelId in artikelliste){
+                // skip loop if the property is from prototype
+                if (!artikelliste.hasOwnProperty(artikelId)) continue;
+        
+                var artikel = artikelliste[artikelId];
+                
+                if("anzahl" in artikel && artikel.anzahl > 0){
+                    //Der Artikel wurde bestellt
+                    if("abgerechnet" in artikel && artikel.abgerechnet > 0){
+                        if(artikel.abgerechnet < artikel.anzahl){
+                            artikelNochAbrechnenMuss = true;
+                        }
+                    }else{
+                        artikelNochAbrechnenMuss = true;
+                    }                        
+                }
+            }            
+            
+            if(artikelNochAbrechnenMuss){
+                changeView("uebersicht");
+            }
+            else{
+                bestellungAbschliessen();
+                changeView("hauptmenue");
+            }          
+        }
+        else{
+            //Gesamtabrechnen
+            bestellungAbschliessen();
+            changeView("hauptmenue");
+        }
+    }
 }
 
 function changeView(newView){
