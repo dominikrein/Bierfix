@@ -5,9 +5,8 @@
         $data .= "timestamp,Datum,Bedienung,Tischnummer,Artikeltyp,ArtikelID,Bezeichnung,Detail,Anzahl,Einzelpreis";
     }
 
-
     foreach($bestellung as $artikel){
-        $data .= "\r\n" . time() . ','. date("Y-m-d H:i:s.u") . ',' . $bestellungXml['bediener'] . ',' . $bestellungXml['tischnummer'] . ',';
+        $data .= "\r\n" . time() . ','. date("Y-m-d H:i:s") . ',' . $bestellungXml['bediener'] . ',' . $bestellungXml['tischnummer'] . ',';
         $data .= $artikel['typ'] . ',' . $artikel['id'] . ',' . $artikel['bezeichnung'] . ',';
         $data .= $artikel['details'] . ',' . $artikel['anzahl'] . ',' . $artikel['preis'];
     }
