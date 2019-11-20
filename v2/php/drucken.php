@@ -1,5 +1,8 @@
 <?php
-    
+    $bediener = "Kassierer: " . $bestellungXml['bediener'];
+    $tischnummer = $bestellungXml['tischnummer'];
+    $url = 'http://' . $printerIp . '/cgi-bin/epos/service.cgi?devid=epson&timeout=10000';
+
     $logo = file_get_contents("../bonlogo.txt");
         
     $content = "";
@@ -7,20 +10,19 @@
 
     $gesamtbetrag = 0.00;
 
-    foreach($bestellung->artikel as $artikel){
+    foreach($bestellung as $artikel){
         $anzahl = $artikel['anzahl'];
         $bezeichnung = $artikel['bezeichnung'];
-        $menge = $artikel['menge'];
+        $details = $artikel['details'];
         $typ = $artikel['typ'];
         $preis = number_format(($artikel['preis'] * $anzahl), 2, '.', '');
         $gesamtbetrag += $preis;
 
-        //Die Liste ist nach Typ (Essen, Getränke, ...) sortiert (irgendwo bei artikel.php).
+        //Die Liste ist nach Typ (Essen, Getränke, ...) sortiert.
         if(strcmp($typ, $aktuellerTyp) != 0){
             //Anderer Typ - Typ drucken
             $aktuellerTyp = $typ;
-            $artikeltyp = $artikeltypen["$typ"];
-            $content .= "<feed/><text smooth=\"true\" width=\"1\" height=\"1\" align=\"left\" reverse=\"false\">------------------------------------------</text><feed/><text align=\"center\" smooth=\"true\" width=\"1\" height=\"1\" reverse=\"false\">$artikeltyp</text><feed/><text smooth=\"true\" width=\"1\" height=\"1\" align=\"left\" reverse=\"false\">------------------------------------------</text>";
+            $content .= "<feed/><text smooth=\"true\" width=\"1\" height=\"1\" align=\"left\" reverse=\"false\">------------------------------------------</text><feed/><text align=\"center\" smooth=\"true\" width=\"1\" height=\"1\" reverse=\"false\">$typ</text><feed/><text smooth=\"true\" width=\"1\" height=\"1\" align=\"left\" reverse=\"false\">------------------------------------------</text>";
         }      
 
         //Es stehen beim Drucker exakt 42 Zeichen pro Zeile zur Verfügung 
@@ -29,7 +31,7 @@
         $leerzeichen = "";                
         $zeile = "";
         while(mb_strlen($zeile, "utf-8") < 42){            
-            $zeile = $anzahl . "x " . $bezeichnung . " " . $menge . $leerzeichen . $preis . "€";
+            $zeile = $anzahl . "x " . $bezeichnung . " " . $details . $leerzeichen . $preis . "€";
             $leerzeichen .= " ";
         }
         $content .= "<feed/> <text smooth=\"true\" align=\"left\" reverse=\"false\">" . $zeile . "</text>";

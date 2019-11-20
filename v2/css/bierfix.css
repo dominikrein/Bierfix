@@ -16,6 +16,11 @@
     font-weight: bold;
 }
 
+.uebersichtSpan span{
+    font-style: italic;
+    font-weight: lighter;
+}
+
 
   .inputBold{
     font-weight: bold;

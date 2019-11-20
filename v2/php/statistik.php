@@ -6,10 +6,10 @@
     }
 
 
-    foreach($bestellung->artikel as $artikel){
-        $data .= "\r\n" . time() . ','. date("Y-m-d H:i:s.u") . ',' . $bestellung['bediener'] . ',' . $bestellung['tischnummer'] . ',';
+    foreach($bestellung as $artikel){
+        $data .= "\r\n" . time() . ','. date("Y-m-d H:i:s.u") . ',' . $bestellungXml['bediener'] . ',' . $bestellungXml['tischnummer'] . ',';
         $data .= $artikel['typ'] . ',' . $artikel['id'] . ',' . $artikel['bezeichnung'] . ',';
-        $data .= $artikel['menge'] . ',' . $artikel['anzahl'] . ',' . $artikel['preis'];
+        $data .= $artikel['details'] . ',' . $artikel['anzahl'] . ',' . $artikel['preis'];
     }
 
     file_put_contents($statistik_dateiname, $data, FILE_APPEND);

@@ -32,8 +32,11 @@ function bestellungAbschliessen(){
             preis: "2.90"
             typ: "Getränke" 
         */
-        xml_content = xml_content + `<artikel id="${artikelId}" bezeichnung="${artikel.bezeichung}" menge="${artikel.details}" preis="${artikel.preis}" anzahl="${artikel.anzahl}" typ="${artikel.typ}" />`;
-     }
+        if("anzahl" in artikel && artikel.anzahl > 0){
+          //Nur übermitteln wenn auch bestellt, unbestellte Artikel nicht übermitteln
+          xml_content = xml_content + `<artikel id="${artikelId}" bezeichnung="${artikel.bezeichnung}" details="${artikel.details}" preis="${artikel.preis}" anzahl="${artikel.anzahl}" typ="${artikel.typ}" />`;
+        }
+         }
     
     var xml_end = "</bestellung>";
     var xml = xml_header + xml_begin + xml_content + xml_end;
@@ -219,15 +222,15 @@ function uebersichtLoad(){
             }
 
             var newArtikel = document.createElement("p");
-            newArtikel.className = `uebersichtEm container my-2 py-2 font-weight-bolder text-white border border-light rounded bg-dark`;
+            newArtikel.className = `uebersichtEm uebersichtSpan container my-2 py-2 font-weight-bolder text-white border border-light rounded bg-dark`;
             newArtikel.setAttribute("onClick", `uebersichtOnClick(${artikelId})`);
             newArtikel.setAttribute("onTouchStart", `uebersichtOnTouchStart(${artikelId})`);
             newArtikel.setAttribute("onTouchEnd", "uebersichtOnTouchEnd()");
             gesamtbetrag += (artikel.preis * korrigierteAnzahl);
         
-            newArtikel.innerHTML = `${korrigierteAnzahl}x ${artikel.bezeichnung}`;
+            newArtikel.innerHTML = `${korrigierteAnzahl}x ${artikel.bezeichnung} <span>${artikel.details}</span>`;
             if("auswahl" in artikel && artikel.auswahl > 0){
-                newArtikel.innerHTML = `<em>${artikel.auswahl}/</em>${korrigierteAnzahl}x ${artikel.bezeichnung}`;
+                newArtikel.innerHTML = `<em>${artikel.auswahl}/</em>${korrigierteAnzahl}x ${artikel.bezeichnung} <span>${artikel.details}</span>`;
                 auswahlbetrag += (artikel.preis * artikel.auswahl);
             }
             uebersichtListe.appendChild(newArtikel); 
