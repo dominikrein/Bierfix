@@ -52,7 +52,8 @@ function bestellungAbschliessen(){
 }
 
 function uebersicht_btnGesamt_onClick(){
-    bestellungAbschliessen();
+    mode_teilabrechnen = false;
+    showRueckgeldrechner(gesamtbetrag);
 }
 
 function uebersicht_btnAuswahl_onClick(){
@@ -399,10 +400,8 @@ function trFooterZahlen(){
     }
     else if(currentView == "rueckgeldrechner" && mode_taschenrechner == false){
         //Uebersicht -> Auswahl oder Gesamt Zahlen fertig
-
         //Generell soll hier nicht unten der Gesamtbetrag angezeigt werden
         document.getElementById("tr-gesamt-p").innerHTML = "";
-
         if(mode_teilabrechnen == true){
             //Eventuell sind noch nicht alle Artikel abgerechnet
             for(var artikelId in artikelliste){
@@ -445,13 +444,11 @@ function trFooterZahlen(){
             }
             else{
                 bestellungAbschliessen();
-                changeView("hauptmenue");
             }          
         }
         else{
             //Gesamtabrechnen
             bestellungAbschliessen();
-            changeView("hauptmenue");
         }
     }
 }
