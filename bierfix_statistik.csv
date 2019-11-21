@@ -36,3 +36,6 @@ timestamp,Datum,Bedienung,Tischnummer,Artikeltyp,ArtikelID,Bezeichnung,Detail,An
 1574360210,2019-11-21 19:16:50,Dominik,50,Speisen,4,Rote,mit Wecken,1,2.90
 1574360219,2019-11-21 19:16:59,Dominik,50,Speisen,4,Rote,mit Wecken,1,2.90
 1574360235,2019-11-21 19:17:15,Dominik,50,Speisen,4,Rote,mit Wecken,1,2.90
+1574360625,2019-11-21 19:23:45,Dominik,112,Getränke,2,Radler,0.5l,2,2.90
+1574360625,2019-11-21 19:23:45,Dominik,112,Getränke,3,Bier,Alkoholfrei,1,2.90
+1574360625,2019-11-21 19:23:45,Dominik,112,Speisen,5,Steak,im Wecken,2,3.50
