@@ -4,6 +4,8 @@
     $printerIp = "192.168.2.127";
     $statistik_dateiname = "../bierfix_statistik.csv";
 
+	include_once('database.php');
+
     function array_sort_by_column(&$array, $column, $direction = SORT_ASC) {
         $reference_array = array();
     
@@ -30,8 +32,30 @@
 
     $artikeltyp = array_column($bestellung, 'typ');
     array_multisort($artikeltyp, SORT_DESC, $bestellung);
-    var_dump($bestellung);
 
-    include_once 'statistik.php';
+
+
+	//DB
+    $bediener = $bestellungXml['bediener'];
+    $tischnummer = $bestellungXml['tischnummer'];
+	$datumzeit = date("Y-m-d  H:i:s");
+
+	//Bestellung in DB speichern und Bestellungs-ID holen
+	$sql = "INSERT INTO `bestellungen` (`tischnummer`, `zeitstempel`, `bediener_id`) "
+		.  "SELECT $tischnummer, $datumzeit, bedienungen.id "
+		.  "FROM bedienungen WHERE name = '$bediener'";
+	executeQuery($sql);
+	$bestellung_id = getInsertID();
+
+	//Artikel der Bestellung in DB speichern
+	foreach($bestellung as $artikel){
+		$artId = $artikel['id'];
+		$artAnzahl = $artikel['anzahl'];
+		$sql = "INSERT INTO `bestellte_artikel` (`bestellung_id`, `artikel_id`, `bestellte_anzahl`) "
+			 . "VALUES ('$bestellung_id', '$artId', '$artAnzahl')";
+		executeQuery($sql);
+    }
+
     include_once 'drucken.php';
+	
 ?>
