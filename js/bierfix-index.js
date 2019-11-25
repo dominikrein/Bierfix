@@ -12,6 +12,20 @@ var mode_taschenrechner = false;
 var mode_teilabrechnen = false;
 var currentView = "hauptmenue";
 
+var artikelliste = null;
+
+function getArtikel(){
+	let xhr = new XMLHttpRequest();
+	xhr.open("GET", 'php/dbAction.php?action=getArtikel', false);
+    xhr.send(null);
+    try{
+        artikelliste = JSON.parse(xhr.responseText);
+    }
+    catch{
+        alert("Datenbankfehler " + xhr.responseText)
+    }
+}
+
 function bestellungAbschliessen(){
 
     //create XML to transfer to php

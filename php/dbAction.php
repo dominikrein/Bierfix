@@ -47,6 +47,11 @@
                                             echo $result;
                                         }
                                         break;
+            case 'removeArtikel':       $result = executeQuery("DELETE FROM `artikel` WHERE `id` =" . $_GET['id']);
+                                        if($result != "1"){
+                                            echo $result;
+                                        }
+                                        break;
         }
     }
     else{

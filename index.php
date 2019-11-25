@@ -9,9 +9,9 @@
         <link rel="stylesheet" href="css/bierfix.css">     
         <title>Bierfix</title>
         <link rel="icon" href="img/bier-50.png" type="image/png">
-        <script src="artikelliste.js"></script>
+        <!--<script src="artikelliste.js"></script>-->
     </head>
-    <body class="bg-light">
+    <body class="bg-light" onload="getArtikel()">
         
         <div class="container sticky-top bg-dark">
             <div id="standard-header" class="clearfix">

@@ -173,8 +173,17 @@ function addArtikel(){
 	var selected = sel.options[sel.selectedIndex];
 	var id = selected.getAttribute('data-id');
 	var preis = document.getElementById("artikelModalPreis").value;
-	var farbe = document.getElementById("artikelModalColor").value;
-	asyncGet(`../php/dbAction.php?action=addArtikel&bezeichnung=${bezeichnung}&details=${details}&typ=${id}&preis=${preis}&farbe=${farbe}`, getArtikeltypenFromDB(printArtikeltypen));
+	var farbe = encodeURIComponent(document.getElementById("artikelModalColor").value);
+	
+	syncGet(`../php/dbAction.php?action=addArtikel&bezeichnung=${bezeichnung}&details=${details}&typ=${id}&preis=${preis}&farbe=${farbe}`);
+	getArtikelFromDB(printArtikel);
+	$("#artikelModal").modal('toggle');
+}
+
+function removeArtikel(id){
+	syncGet(`../php/dbAction.php?action=removeArtikel&id=${id}`);
+	getArtikelFromDB(printArtikel);
+	$("#artikelModal").modal('toggle');
 }
 
 function makeArtikeltypSelect(){
@@ -211,16 +220,21 @@ $("#artikelModal").on('show.bs.modal', function(event){
 			break;
 		case "add":	document.getElementById("artikelModalLabel").innerHTML = "Artikel erstellen";
 					document.getElementById("artikelModalSave").innerHTML = "Hinzuf&uuml;gen";
+					document.getElementById("artikelModalSave").setAttribute("onClick", "addArtikel()");
 					document.getElementById("artikelModalSave").className = "btn btn-success";
 					document.getElementById("artikelFormAddEdit").style = "";
 					document.getElementById("artikelFormRemove").style = "display: none;";
+					document.getElementById("artikelModalBezeichnung").value = "";
+					document.getElementById("artikelModalDetails").value = "";
+					document.getElementById("artikelModalPreis").value = "";
+					document.getElementById("artikelModalColor").value = "#ffffff";
 					getArtikeltypenFromDB(makeArtikeltypSelect);
 			break;
 		case "remove": 	document.getElementById("artikelModalLabel").innerHTML = "Artikel entfernen";
 						document.getElementById("artikelModalSave").innerHTML = "Entfernen";
 						document.getElementById("artikelModalSave").className = "btn btn-danger";
 						document.getElementById("artikelModalSave").setAttribute("onClick", `removeArtikel(${artikel.id})`)
-						document.getElementById("artikelModalContent").innerHTML = `Soll der Artikel <strong>${artikel.bezeichnung}</strong> mit der ID <strong>${artikel.id}</strong> wirklich entfernt werden?`;
+						document.getElementById("artikelFormRemove").innerHTML = `Soll der Artikel <strong>${artikel.bezeichnung}</strong> mit der ID <strong>${artikel.id}</strong> wirklich entfernt werden?`;
 						document.getElementById("artikelFormAddEdit").style = "display: none;";
 						document.getElementById("artikelFormRemove").style = "";
 			break;
