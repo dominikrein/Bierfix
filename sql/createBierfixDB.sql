@@ -39,7 +39,7 @@ CREATE TABLE `bierfix`.`bestellte_artikel` (
 
 CREATE TABLE `bierfix`.`artikel_typen` (
 	`id` int NOT NULL AUTO_INCREMENT,
-	`bezeichnung` varchar(255) NOT NULL,
+	`bezeichnung` varchar(255) UNIQUE NOT NULL,
 	PRIMARY KEY (`id`)
 )ENGINE = InnoDB;
 

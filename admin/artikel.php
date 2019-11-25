@@ -1,18 +1,10 @@
 <!doctype html>
 <html>
 <head>
- 	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, maximum-scale=1, user-scalable=0">
-	<meta name="apple-mobile-web-app-capable" content="yes" />
-	<meta name="apple-mobile-web-app-status-bar-style" content="black" />
-	<link rel="stylesheet" href="../css/bootstrap.min.css">
-	<link rel="stylesheet" href="../css/bierfix-admin.css">     
-	<link rel="stylesheet" href="../css/all.css">
-	<title>Admin - Bierfix</title>
-	<link rel="icon" href="../img/bier-50.png" type="image/png">
+	<?php include('header.html'); ?>
 </head>
 
-<body>
+<body onload="getArtikelFromDB()">
 	<!-- Modal -->
 	<div class="modal fade" id="artikelModal" tabindex="-1" role="dialog">
 	  <div class="modal-dialog" role="document">
@@ -23,38 +15,39 @@
 			  <span aria-hidden="true">&times;</span>
 			</button>
 		  </div>
-		  <div class="modal-body" id="artikelModalContent">
-			  
-			  
-			<div class="form-group">
-				<input type="text" class="form-control" id="artikelModalBezeichnung" placeholder="Bezeichnung">
-				<small class="form-text text-muted">Die Bezeichnung des neuen Artikels, beispielsweise "Cola".</small>
-			</div>
-			  <div class="form-group">
-				<input type="text" class="form-control" id="artikelModalDetails" placeholder="Details">
-				<small class="form-text text-muted">N&auml;here Informationen zum Artikel, beispielsweise die Menge.</small>
-			</div>
-			  <div class="form-group">
-				<select class="form-control" id="artikelModalTypSelect">
-				  <option>1</option>
-				  <option>2</option>
-				  <option>3</option>
-				  <option>4</option>
-				  <option>5</option>
-				</select>
-				<small class="form-text text-muted">Der Artikeltyp, beispielsweise Getr&auml;nke.</small>		  
-			</div>
-			  <div>
-			<div class="input-group">
-				<div class="input-group-prepend">
-				  <div class="input-group-text">&euro;</div>
-				</div>
-				<input type="number" class="form-control" id="artikelModalPreis" placeholder="1,56">
-				
-			  </div>
-			  <small class="form-text text-muted">Der Preis, ohne Euro-Zeichen.</small>
-			  </div>
+		  <div class="modal-body" id="artikelModalContent">			  
+				<div id="artikelFormAddEdit">
+						<div class="form-group">
+							<input type="text" class="form-control" id="artikelModalBezeichnung" placeholder="Bezeichnung">
+							<small class="form-text text-muted">Die Bezeichnung des neuen Artikels, beispielsweise "Cola".</small>
+						</div>
+						<div class="form-group">
+							<input type="text" class="form-control" id="artikelModalDetails" placeholder="Details">
+							<small class="form-text text-muted">N&auml;here Informationen zum Artikel, beispielsweise die Menge.</small>
+						</div>
+						<div class="form-group">
+							<select class="form-control" id="artikelModalTypSelect">
+							</select>
+							<small class="form-text text-muted">Der Artikeltyp, beispielsweise Getr&auml;nke.</small>		  
+						</div>
+						<div>
+						<div class="input-group">
+							<div class="input-group-prepend">
+							<div class="input-group-text">&euro;</div>
+							</div>
+							<input type="number" class="form-control" id="artikelModalPreis" placeholder="1,56">
+							
+						</div>
+						<small class="form-text text-muted">Der Preis, ohne Euro-Zeichen.</small>
+						</div>
+						<div class="form-group mt-2">
+							<input type="color" class="form-control" id="artikelModalColor">
+							<small class="form-text text-muted">Mit dieser Farbe wird der Artikel hinterlegt.</small>
+						</div>
 
+				</div>
+				<div id="artikelFormRemove">
+				</div>
 		  </div>
 		  <div class="modal-footer">
 			<button type="button" class="btn btn-secondary" data-dismiss="modal">Zur&uuml;ck</button>
@@ -68,15 +61,7 @@
 	 
 
     <!-- Sidebar -->
-    <div class="bg-light border-right" id="sidebar-wrapper">
-      <div class="sidebar-heading"><strong>Bierfix Admin</strong></div>
-      <div class="list-group list-group-flush">
-        <a href="index.php" class="list-group-item list-group-item-action bg-light">Dashboard</a>
-        <a href="artikel.php" class="list-group-item list-group-item-action bg-light">Artikel</a>
-        <a href="#" class="list-group-item list-group-item-action bg-light">Bon</a>
-        <a href="#" class="list-group-item list-group-item-action bg-light">Einstellungen</a>
-      </div>
-    </div>
+   <?php include('menu.html'); ?>
     <!-- /#sidebar-wrapper -->
 
     <!-- Page Content -->
@@ -84,10 +69,10 @@
 
       <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
         <button class="btn btn-light" id="menu-toggle"><span class="navbar-toggler-icon"></span></button>
-		<h1 class="mt-1">Artikel</h1>
+		<h1>Artikel</h1>
       </nav>
 
-      <div class="container-fluid">
+	  <div class="container-fluid">
         <!--Content-->
 		  <button class="btn btn-success m-2 mt-3" data-toggle="modal"  data-target="#artikelModal" data-action="add"><i class="fas fa-plus-circle mr-2"></i>Hinzufügen</button>
 		  <div>
@@ -114,7 +99,6 @@
       </div>
     </div>
     <!-- /#page-content-wrapper -->
-
   </div>
   <!-- /#wrapper -->
 

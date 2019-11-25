@@ -1,12 +1,12 @@
 <!doctype html>
 <html>
 <head>
-  <?php include('header.html'); ?>
+	<?php include('header.html'); ?>
 </head>
 
 <body>
-
   <div class="d-flex" id="wrapper">
+	 
 
     <!-- Sidebar -->
     <?php include('menu.html'); ?>
@@ -17,13 +17,14 @@
 
       <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
         <button class="btn btn-light" id="menu-toggle"><span class="navbar-toggler-icon"></span></button>
-		<h1>Dashboard</h1>
+		<h1>Datenbankeinstellungen</h1>
       </nav>
 
       <div class="container-fluid">
-        <h1 class="mt-4">Simple Sidebar</h1>
-        <p>The starting state of the menu will appear collapsed on smaller screens, and will appear non-collapsed on larger screens. When toggled using the button below, the menu will change.</p>
-        <p>Make sure to keep all page content within the <code>#page-content-wrapper</code>. The top navbar is optional, and just for demonstration. Just create an element with the <code>#menu-toggle</code> ID which will toggle the menu when clicked.</p>
+        <!--Content-->
+		<div class="mt-5"><button onClick="createDB()" class="btn btn-success"><i class="fas fa-database"></i> Neue Datenbank erstellen</button></div>
+		<div class="mt-3"><button onClick="dropDB()" class="btn btn-danger"><i class="fas fa-bomb"></i> Datenbank l&ouml;schen</button></div>
+		
       </div>
     </div>
     <!-- /#page-content-wrapper -->
