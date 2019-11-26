@@ -17,7 +17,7 @@
 
 	function getInsertID(){
 		global $conn;
-		return $conn->insert_id();
+		return $conn->insert_id;
 	}
 
 	function executeQuery($sql){

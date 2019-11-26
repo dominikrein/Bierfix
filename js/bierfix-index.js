@@ -54,6 +54,7 @@ function bestellungAbschliessen(){
     
     var xml_end = "</bestellung>";
     var xml = xml_header + xml_begin + xml_content + xml_end;
+	console.log(xml);
     $.ajax({
         url: 'php/bestellungsEingang.php',
         type: 'POST',

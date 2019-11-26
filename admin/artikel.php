@@ -18,15 +18,15 @@
 		  <div class="modal-body" id="artikelModalContent">			  
 				<div id="artikelFormAddEdit">
 						<div class="form-group">
-							<input type="text" class="form-control" id="artikelModalBezeichnung" placeholder="Bezeichnung">
-							<small class="form-text text-muted">Die Bezeichnung des neuen Artikels, beispielsweise "Cola".</small>
+							<input type="text" class="form-control" id="artikelModalBezeichnung" placeholder="Bezeichnung" required>
+							<small class="form-text text-muted">Die Bezeichnung des Artikels, beispielsweise "Cola".</small>
 						</div>
 						<div class="form-group">
 							<input type="text" class="form-control" id="artikelModalDetails" placeholder="Details">
 							<small class="form-text text-muted">N&auml;here Informationen zum Artikel, beispielsweise die Menge.</small>
 						</div>
 						<div class="form-group">
-							<select class="form-control" id="artikelModalTypSelect">
+							<select class="form-control" id="artikelModalTypSelect" required>
 							</select>
 							<small class="form-text text-muted">Der Artikeltyp, beispielsweise Getr&auml;nke.</small>		  
 						</div>
@@ -35,7 +35,7 @@
 							<div class="input-group-prepend">
 							<div class="input-group-text">&euro;</div>
 							</div>
-							<input type="number" class="form-control" id="artikelModalPreis" placeholder="1,56">
+							<input type="number" class="form-control" id="artikelModalPreis" placeholder="1,56" required>
 							
 						</div>
 						<small class="form-text text-muted">Der Preis, ohne Euro-Zeichen.</small>
@@ -75,6 +75,7 @@
 	  <div class="container-fluid">
         <!--Content-->
 		  <button class="btn btn-success m-2 mt-3" data-toggle="modal"  data-target="#artikelModal" data-action="add"><i class="fas fa-plus-circle mr-2"></i>Hinzufügen</button>
+		  <button class="btn btn-info m-2 mt-3" onClick="sortArtikel()"><i class="fas fa-sort-amount-down-alt mr-2"></i>Sortieren nach Typ</button>
 		  <div>
 			<table class="table table-striped table-hover mt-2">
 				<thead>

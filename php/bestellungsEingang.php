@@ -29,7 +29,7 @@
             'typ' => $artikel['typ']
         );
     }
-
+	
     $artikeltyp = array_column($bestellung, 'typ');
     array_multisort($artikeltyp, SORT_DESC, $bestellung);
 
@@ -39,11 +39,11 @@
     $bediener = $bestellungXml['bediener'];
     $tischnummer = $bestellungXml['tischnummer'];
 	$datumzeit = date("Y-m-d  H:i:s");
-
+	
 	//Bestellung in DB speichern und Bestellungs-ID holen
-	$sql = "INSERT INTO `bestellungen` (`tischnummer`, `zeitstempel`, `bediener_id`) "
-		.  "SELECT $tischnummer, $datumzeit, bedienungen.id "
-		.  "FROM bedienungen WHERE name = '$bediener'";
+	$sql = "INSERT INTO `bestellungen` (`tischnummer`, `zeitstempel`, `bediener_name`) "
+		.  "VALUES ('$tischnummer', '$datumzeit', '$bediener')";
+
 	executeQuery($sql);
 	$bestellung_id = getInsertID();
 
@@ -56,6 +56,6 @@
 		executeQuery($sql);
     }
 
-    include_once 'drucken.php';
+   include_once 'drucken.php';
 	
 ?>

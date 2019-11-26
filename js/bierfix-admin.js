@@ -1,28 +1,29 @@
 var artikelliste = null;
 var artikeltypenliste = null;
+var artikelToEdit = null;
 
 function getArtikelFromDB(){
 	var xhr = new XMLHttpRequest();
 	xhr.open("GET", "../php/dbAction.php?action=getArtikel", true);
 	xhr.onload = function (e) {
-	if (xhr.readyState === 4) {
-		if (xhr.status === 200) {
-			try{
-				artikelliste = JSON.parse(xhr.responseText);
+		if (xhr.readyState === 4) {
+			if (xhr.status === 200) {
+				try{
+					artikelliste = JSON.parse(xhr.responseText);
+				}
+				catch {
+					alert("Datenbankfehler " + xhr.responseText)
+				}
+				if(artikelliste != null){
+					printArtikel();
+				}
+			} else {
+			alert(xhr.statusText);
 			}
-			catch{
-				alert("Datenbankfehler " + xhr.responseText)
-			}
-			if(artikelliste != null){
-				printArtikel();
-			}
-		} else {
-		alert(xhr.statusText);
 		}
-	}
 	};
 	xhr.onerror = function (e) {
-	alert(xhr.statusText);
+		alert(xhr.statusText);
 	};
 	xhr.send(null); 
 }
@@ -129,18 +130,18 @@ function asyncGet(url, callback){
 	var xhr = new XMLHttpRequest();
 	xhr.open("GET", url, true);
 	xhr.onload = function (e) {
-	if (xhr.readyState === 4) {
-		if (xhr.status === 200) {
-			if(xhr.responseText == ""){
-				callback();
+		if (xhr.readyState === 4) {
+			if (xhr.status === 200) {
+				if(xhr.responseText == ""){
+					callback();
+				}
+				else{
+					alert(xhr.responseText);
+				}			
+			} else {
+				alert(xhr.statusText);
 			}
-			else{
-				alert(xhr.responseText);
-			}			
-		} else {
-			alert(xhr.statusText);
 		}
-	}
 	};
 	xhr.onerror = function (e) {
 		alert(xhr.statusText);
@@ -150,6 +151,7 @@ function asyncGet(url, callback){
 
 function syncGet(url){
 	let xhr = new XMLHttpRequest();
+
 	xhr.open("GET", url, false);
 	xhr.send(null);
 }
@@ -166,16 +168,20 @@ function removeArtikeltyp(id){
 	getArtikeltypenFromDB(printArtikeltypen);
 }
 
+function sortArtikel(){
+	asyncGet('../php/dbAction.php?action=sortArtikel', getArtikelFromDB);
+}
+
 function addArtikel(){
 	var bezeichnung = document.getElementById("artikelModalBezeichnung").value;
 	var details = document.getElementById("artikelModalDetails").value;
 	var sel = document.getElementById("artikelModalTypSelect");
 	var selected = sel.options[sel.selectedIndex];
-	var id = selected.getAttribute('data-id');
+	var typid = selected.getAttribute('data-id');
 	var preis = document.getElementById("artikelModalPreis").value;
 	var farbe = encodeURIComponent(document.getElementById("artikelModalColor").value);
 	
-	syncGet(`../php/dbAction.php?action=addArtikel&bezeichnung=${bezeichnung}&details=${details}&typ=${id}&preis=${preis}&farbe=${farbe}`);
+	syncGet(`../php/dbAction.php?action=addArtikel&bezeichnung=${bezeichnung}&details=${details}&typ=${typid}&preis=${preis}&farbe=${farbe}`);
 	getArtikelFromDB(printArtikel);
 	$("#artikelModal").modal('toggle');
 }
@@ -202,21 +208,50 @@ function makeArtikeltypSelect(){
 	}
 }
 
+function setArtikeltypSelect(){
+	makeArtikeltypSelect(); //Alle Optionen laden
+	
+	//Typ auswählen
+	var typsel = document.getElementById("artikelModalTypSelect");
+	var typ = artikeltypenliste[artikelToEdit.typ];
+	typsel.value = `${typ.id} - ${typ.bezeichnung}`;		
+}
+
+function editArtikel(id){
+	var bezeichnung = document.getElementById("artikelModalBezeichnung").value;
+	var details = document.getElementById("artikelModalDetails").value;
+	var sel = document.getElementById("artikelModalTypSelect");
+	var selected = sel.options[sel.selectedIndex];
+	var typid = selected.getAttribute('data-id');
+	var preis = document.getElementById("artikelModalPreis").value;
+	var farbe = encodeURIComponent(document.getElementById("artikelModalColor").value);
+	
+	syncGet(`../php/dbAction.php?action=editArtikel&id=${id}&bezeichnung=${bezeichnung}&details=${details}&typ=${typid}&preis=${preis}&farbe=${farbe}`);
+	getArtikelFromDB(printArtikel);
+	$("#artikelModal").modal('toggle');
+}
+
 $("#artikelModal").on('show.bs.modal', function(event){
 	var button = $(event.relatedTarget);
 	var action = button.data('action');
 	var artikel = null;
 	if(action != "add"){
 		//Die Option gibt es bei Add nicht
-		artikel = artikelliste[button.data('id')];		
+		artikel = artikelliste[button.data('id')];	
+		artikelToEdit = artikel;
 	}
 	switch(action){
-		case "edit": document.getElementById("artikelModalLabel").innerHTML = "Artikel anpassen";
+		case "edit":document.getElementById("artikelModalLabel").innerHTML = "Artikel anpassen";
 					document.getElementById("artikelModalSave").innerHTML = "&Auml;ndern";
 					document.getElementById("artikelModalSave").className = "btn btn-warning";
-					document.getElementById("artikelModalSave").setAttribute("onClick", "addArtikel()");
+					document.getElementById("artikelModalSave").setAttribute("onClick", `editArtikel(${artikel.id})`);
 					document.getElementById("artikelFormAddEdit").style = "";
 					document.getElementById("artikelFormRemove").style = "display: none;";
+					document.getElementById("artikelModalBezeichnung").value = artikel.bezeichnung;
+					document.getElementById("artikelModalDetails").value = artikel.details;
+					document.getElementById("artikelModalPreis").value = artikel.preis;
+					document.getElementById("artikelModalColor").value = artikel.farbe;
+					getArtikeltypenFromDB(setArtikeltypSelect);
 			break;
 		case "add":	document.getElementById("artikelModalLabel").innerHTML = "Artikel erstellen";
 					document.getElementById("artikelModalSave").innerHTML = "Hinzuf&uuml;gen";
@@ -227,7 +262,7 @@ $("#artikelModal").on('show.bs.modal', function(event){
 					document.getElementById("artikelModalBezeichnung").value = "";
 					document.getElementById("artikelModalDetails").value = "";
 					document.getElementById("artikelModalPreis").value = "";
-					document.getElementById("artikelModalColor").value = "#ffffff";
+					document.getElementById("artikelModalColor").value = "#ffff00";
 					getArtikeltypenFromDB(makeArtikeltypSelect);
 			break;
 		case "remove": 	document.getElementById("artikelModalLabel").innerHTML = "Artikel entfernen";

@@ -9,14 +9,6 @@ CREATE TABLE `bierfix`.`artikel` (
 	PRIMARY KEY (`id`)
 )ENGINE = InnoDB;
 
-CREATE TABLE `bierfix`.`bedienungen` (
-	`id` int NOT NULL AUTO_INCREMENT,
-	`name` varchar(255) NOT NULL,
-	`ip` varchar(255) NOT NULL,
-	`mac` varchar(255) NOT NULL,
-	PRIMARY KEY (`id`)
-)ENGINE = InnoDB;
-
 CREATE TABLE `bierfix`.`einstellungen` (
 	`key` varchar(255) NOT NULL,
 	`value` varchar(255),
@@ -26,7 +18,7 @@ CREATE TABLE `bierfix`.`einstellungen` (
 CREATE TABLE `bierfix`.`bestellungen` (
 	`id` int NOT NULL AUTO_INCREMENT,
 	`tischnummer` varchar(255) NOT NULL,
-	`bediener_id` int NOT NULL,
+	`bediener_name` int NOT NULL,
 	`zeitstempel` DATETIME NOT NULL,
 	PRIMARY KEY (`id`)
 )ENGINE = InnoDB;
@@ -39,13 +31,11 @@ CREATE TABLE `bierfix`.`bestellte_artikel` (
 
 CREATE TABLE `bierfix`.`artikel_typen` (
 	`id` int NOT NULL AUTO_INCREMENT,
-	`bezeichnung` varchar(255) UNIQUE NOT NULL,
+	`bezeichnung` varchar(255) NOT NULL,
 	PRIMARY KEY (`id`)
 )ENGINE = InnoDB;
 
 ALTER TABLE `bierfix`.`artikel` ADD CONSTRAINT `artikel_fk0` FOREIGN KEY (`typ`) REFERENCES `bierfix`.`artikel_typen`(`id`);
-
-ALTER TABLE `bierfix`.`bestellungen` ADD CONSTRAINT `bestellungen_fk0` FOREIGN KEY (`bediener_id`) REFERENCES `bierfix`.`bedienungen`(`id`);
 
 ALTER TABLE `bierfix`.`bestellte_artikel` ADD CONSTRAINT `bestellte_artikel_fk0` FOREIGN KEY (`bestellung_id`) REFERENCES `bierfix`.`bestellungen`(`id`);
 

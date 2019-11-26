@@ -20,7 +20,7 @@
 			  
 			<div class="form-group" id="artikeltypenFormAddEdit">
 				<input type="text" class="form-control" id="artikeltypenModalBezeichnung" placeholder="Bezeichnung">
-				<small class="form-text text-muted">Die Bezeichnung der neuen Artikelgruppe, beispielsweise Getr&auml;nke.</small>
+				<small class="form-text text-muted">Die Bezeichnung der Artikelgruppe, beispielsweise Getr&auml;nke.</small>
             </div>
             <div id="artikeltypenFormRemove">
             </div>
