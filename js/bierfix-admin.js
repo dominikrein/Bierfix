@@ -107,6 +107,48 @@ function removeArtikel($id){
 	location.reload();
 }
 
+function dashboardOnload(){
+	asyncGetRet("../php/dbAction.php?action=bestellungenProBedienung", printGraphBedienung);
+}
+
+function asyncGetRet(url, callback){
+	var xhr = new XMLHttpRequest();
+	xhr.open("GET", url, true);
+	xhr.onload = function (e) {
+		if (xhr.readyState === 4) {
+			if (xhr.status === 200) {
+				callback(JSON.parse(xhr.responseText));	
+			} else {
+				alert(xhr.statusText);
+			}
+		}
+	};
+	xhr.onerror = function (e) {
+		alert(xhr.statusText);
+	};
+	xhr.send(null); 
+}
+
+function printGraphBedienung(artikelProBedienung){
+	var bestellungen = {
+		animationEnabled: true,
+		theme: "light2", // "light1", "light2", "dark1", "dark2"
+		data: [{        
+			type: "column",  
+			dataPoints: [      
+			]
+		}]
+	};
+	
+	for(var rowid in artikelProBedienung){ 
+		let row = artikelProBedienung[rowid];
+		bestellungen.data[0].dataPoints.push({ y: parseInt(row.summe), label: `${row.bediener_name}`});
+	}
+	
+	var chart = new CanvasJS.Chart("chartBestellungenProBedienung", bestellungen);
+	chart.render();
+}
+
 function removeArtikeltyp($id){
 	alert("Remove " + $id);
 	location.reload();

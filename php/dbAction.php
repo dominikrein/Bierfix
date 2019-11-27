@@ -88,6 +88,15 @@
 					executeQuery("INSERT INTO `artikel` (`id`, `bezeichnung`, `details`, `typ`, `preis`, `farbe`) VALUES (NULL, '$bezeichnung', '$details', '$typ', '$preis', '$farbe');");
 				}
 				break;
+				
+			case 'bestellungenProBedienung':
+				$query = executeQuery("SELECT bestellungen.bediener_name, SUM(bestellte_artikel.bestellte_anzahl) AS summe FROM bestellungen INNER JOIN bestellte_artikel ON bestellte_artikel.bestellung_id=bestellungen.id GROUP BY bestellungen.bediener_name;");
+				$output = [];
+				while($row = $query->fetch_array(MYSQLI_ASSOC)){
+					$output[] = $row;
+				}
+				echo json_encode($output);
+				break;
         }
     }
     else{

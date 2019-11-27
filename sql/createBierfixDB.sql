@@ -18,7 +18,7 @@ CREATE TABLE `bierfix`.`einstellungen` (
 CREATE TABLE `bierfix`.`bestellungen` (
 	`id` int NOT NULL AUTO_INCREMENT,
 	`tischnummer` varchar(255) NOT NULL,
-	`bediener_name` int NOT NULL,
+	`bediener_name` varchar(255) NOT NULL,
 	`zeitstempel` DATETIME NOT NULL,
 	PRIMARY KEY (`id`)
 )ENGINE = InnoDB;
