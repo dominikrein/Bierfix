@@ -387,7 +387,7 @@ function newTableLoad(){
 }
 
 function showRueckgeldrechner(betrag){
-    document.getElementById("input_zuZahlen").value = betrag;
+    document.getElementById("input_zuZahlen").value = betrag.toFixed(2);
     changeView("rueckgeldrechner");
 }
 
