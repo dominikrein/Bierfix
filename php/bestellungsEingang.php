@@ -5,17 +5,8 @@
     $statistik_dateiname = "../bierfix_statistik.csv";
 
 	include_once('database.php');
-
-    function array_sort_by_column(&$array, $column, $direction = SORT_ASC) {
-        $reference_array = array();
-    
-        foreach($array as $key => $row) {
-            $reference_array[$key] = $row[$column];
-        }
-    
-        array_multisort($reference_array, $direction, $array);
-    }
-
+	include_once 'drucken.php';
+ 
     $bestellungXml = new SimpleXMLElement($_POST["xml"]);
     $bestellung = array();
     foreach($bestellungXml->artikel as $artikel){
@@ -30,11 +21,6 @@
         );
     }
 	
-    $artikeltyp = array_column($bestellung, 'typ');
-    array_multisort($artikeltyp, SORT_DESC, $bestellung);
-
-
-
 	//DB
     $bediener = $bestellungXml['bediener'];
     $tischnummer = $bestellungXml['tischnummer'];
@@ -56,6 +42,84 @@
 		executeQuery($sql);
     }
 
-   include_once 'drucken.php';
+	//-------------------------------------------------------------------------------------
+
+	$query = executeQuery("SELECT * FROM bondrucker;");
+	$druckerliste = [];
+	while($row = $query->fetch_array(MYSQLI_ASSOC)){
+		$druckerliste[] = $row;
+	}
+   	
+	foreach($druckerliste as $bondrucker){
+		 $ipaddr[] = $bondrucker['ipaddr'];
+		 $device_id = $bondrucker['device_id'];		
+		 $url = "http://$ipaddr/cgi-bin/epos/service.cgi?devid=$device_id&timeout=10000";
+
+		 //Welche Artikeltypen werden mit diesem Drucker gedruckt?
+		$bondrucker_id = $bondrucker['id'];
+		$query = executeQuery("SELECT artikel_typen.id, artikel_typen.bezeichnung FROM bondrucker_typen INNER JOIN artikel_typen ON bondrucker_typen.artikeltyp_id=artikel_typen.id WHERE bondrucker_typen.bondrucker_id=$bondrucker_id;");
+		$typenliste = [];
+		while($row = $query->fetch_array(MYSQLI_ASSOC)){
+			$typenliste[] = $row;
+		}
+		
+		$bonContent = "";
+		
+		foreach($typ as $typenliste){
+			//Diese Typen sollen mit dem Drucker gedruckt werden
+			 $typBezeichnung = $typ.bezeichnung;
+			 $bonContent .= "<feed/><text smooth=\"true\" width=\"1\" height=\"1\" align=\"left\" reverse=\"false\">------------------------------------------</text><feed/><text align=\"center\" smooth=\"true\" width=\"1\" height=\"1\" reverse=\"false\">$typBezeichnung</text><feed/><text smooth=\"true\" width=\"1\" height=\"1\" align=\"left\" reverse=\"false\">------------------------------------------</text>";
+			
+			$query = executeQuery("SELECT artikel.bezeichnung, artikel.details, artikel.preis FROM bestellungen INNER JOIN bestellte_artikel ON bestellungen.id=bestellte_artikel.bestellung_id INNER JOIN artikel ON bestellte_artikel.artikel_id=artikel.id WHERE bestellungen.id=$bestellung_id;");
+			$artikelliste = [];
+			while($row = $query->fetch_array(MYSQLI_ASSOC)){
+				$artikelliste[] = $row;
+			}
+			
+			//Es stehen beim Drucker exakt 42 Zeichen pro Zeile zur Verfügung 
+			//Da Preis rechtsbündig müssen die Leerzeichen berechnet werden!
+			//2x Bier 0,5l    6.50€
+			$leerzeichen = "";                
+			$zeile = "";
+			while(mb_strlen($zeile, "utf-8") < 42){            
+				$zeile = $anzahl . "x " . $bezeichnung . " " . $details . $leerzeichen . $preis . "€";
+				$leerzeichen .= " ";
+			}
+			$bonContent .= "<feed/> <text smooth=\"true\" align=\"left\" reverse=\"false\">" . $zeile . "</text>";
+		}
+		
+		
+		
+		
+		$logo = file_get_contents("../bonlogo.txt");
+		$datum = date("d.m.Y  H:i") . " Uhr";
+		$tischnummer = "Tischnummer: $tischnummer";
+		$gesamtbetrag = number_format($gesamtbetrag, 2, '.', '');
+		
+		$request = <<<EOD
+			<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/">
+			<s:Body>
+			<epos-print xmlns="http://www.epson-pos.com/schemas/2011/03/epos-print">
+			$logo
+			<text smooth="true" align="center" width="1" height="1" reverse="false">$datum</text>
+			<feed/>
+			<text smooth="true" align="center" width="1" height="1" reverse="false">$bediener</text>
+			<feed/>
+			<feed/>
+			<text smooth="true"  align="center" width="2" height="2" reverse="true"> $tischnummer </text>
+			$bonContent
+			<feed/>
+			<text smooth="true" width="1" height="1" align="center" reverse="false">==========================================</text>
+			<feed/>
+			<text smooth="true" width="1" height="1" align="right" reverse="false">$gesamtbetrag</text>
+			<feed/>
+			<cut type="feed" />
+			</epos-print>
+			</s:Body>
+			</s:Envelope>
+EOD;
+		
+		
+	}
 	
 ?>

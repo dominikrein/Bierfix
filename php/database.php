@@ -32,6 +32,22 @@
 		return $ret;
 	}
 
+	function beginTransaction(){
+		global $conn;
+		if(!$conn){
+			openConn();
+		}
+		$conn->beginTransaction();
+	}
+
+	function commit(){
+		global $conn;
+		if(!$conn){
+			openConn();
+		}
+		$conn->commit();
+	}
+
 	function executeHostMultiQuery($sql){
 		//Querys die nicht direkt mit der DB connecten, bspw DB erstellen bzw droppen
 		global $dbhost, $dbuser, $dbpass;

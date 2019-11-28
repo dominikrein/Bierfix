@@ -4,7 +4,7 @@
   <?php include('header.html'); ?>
 </head>
 
-<body>
+<body onload="asyncGetRet('../php/dbAction.php?action=getBondrucker', printBondrucker)">
 	<!-- Modal -->
 		<div class="modal fade" id="bondruckerModal" tabindex="-1" role="dialog">
 		  <div class="modal-dialog" role="document">
@@ -35,12 +35,8 @@
 						<input type="text" class="form-control" id="bondruckerModalDevid" placeholder="printer" value="printer">
 						<small class="form-text text-muted">Die 'device-id' des Druckers, wird in der Drucker-Weboberfl&auml;che eingestellt.</small>
 					</div>
-					<div class="form-group">
-						<input type="number" class="form-control" id="bondruckerModalTimeout" placeholder="10000" value="10000">
-						<small class="form-text text-muted">ePOS Timeout in ms, Standard: 10000</small>
-					</div>
 					<div>
-						<div class="border p-2">							
+						<div class="border p-2" id="bondrucker_check">							
 								<div class="form-check">
 								  <input class="form-check-input" type="checkbox" id="defaultCheck2" checked>
 								  <label class="form-check-label" for="defaultCheck2">
@@ -85,10 +81,13 @@
 					<tr>
 						<th scope="col">ID</th>
 						<th scope="col">Bezeichnung</th>
+						<th scope="col">IP-Adresse</th>
+						<th scope="col">Device-ID</th>
+						<th scope="col">Aktive Artikeltypen</th>
 						<th scope="col"><!--Bearbeiten--></th>
 					</tr>
 				</thead>
-				<tbody id="artikeltypenTabelleContainer">
+				<tbody id="bondruckerTabelleContainer">
 				</tbody>
 			</table>
 				

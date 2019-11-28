@@ -97,6 +97,75 @@
 				}
 				echo json_encode($output);
 				break;
+				
+			case 'meistverkaufteArtikel':
+				$query = executeQuery("SELECT artikel.bezeichnung, SUM(bestellte_artikel.bestellte_anzahl) AS summe FROM bestellte_artikel INNER JOIN artikel ON artikel.id=bestellte_artikel.artikel_id GROUP BY bestellte_artikel.artikel_id ORDER BY summe ASC;");
+				$output = [];
+				while($row = $query->fetch_array(MYSQLI_ASSOC)){
+					$output[] = $row;
+				}
+				echo json_encode($output);
+				break;
+			case 'getBestellungen':
+				$limit = $_GET['limit'];
+				$offset = $_GET['offset'];
+				
+				$query = executeQuery("SELECT bestellungen.id, bestellungen.tischnummer, bestellungen.bediener_name, bestellungen.zeitstempel, bestellungen.bon FROM bestellungen LIMIT $limit OFFSET $offset;");
+				$output = [];
+				while($row = $query->fetch_array(MYSQLI_ASSOC)){
+					$output[] = $row;
+				}
+				echo json_encode($output);
+				break;
+			case 'getBondrucker':			
+				$query = executeQuery("SELECT * FROM bondrucker;");
+				$output = [];
+				while($row = $query->fetch_array(MYSQLI_ASSOC)){
+					$output[] = $row;
+				}
+				echo json_encode($output);
+				break;
+			case 'addBondrucker':
+					$bezeichnung = $_GET['bezeichnung'];
+					$ipaddr = $_GET['ipaddr'];
+					$deviceid = $_GET['deviceid'];
+					$typen = $_GET['typen'];
+
+					$result = executeQuery("INSERT INTO `bondrucker` (`id`, `bezeichnung`, `ipaddr`, `device_id`) VALUES (NULL, '$bezeichnung', '$ipaddr', '$deviceid');");
+					if($result != "1"){
+						echo $result;
+					}
+				
+					$bondrucker_id = getInsertID();		
+				
+					foreach($typen as $typ_id){
+						$result = executeQuery("INSERT INTO `bondrucker_typen` (`bondrucker_id`, `artikeltyp_id`) VALUES ('$bondrucker_id', '$typ_id');");
+						if($result != "1"){
+							echo $result;
+						}
+					}
+					
+				break;
+			case 'getBondruckerTypen':
+					$id = $_GET['id'];
+					$query = executeQuery("SELECT bondrucker_typen.bondrucker_id, artikel_typen.id, artikel_typen.bezeichnung FROM bondrucker_typen INNER JOIN artikel_typen ON bondrucker_typen.artikeltyp_id=artikel_typen.id WHERE bondrucker_typen.bondrucker_id=$id;");
+					$output = [];
+					while($row = $query->fetch_array(MYSQLI_ASSOC)){
+						$output[] = $row;
+					}
+					echo json_encode($output);
+				break;
+			case 'removeBondrucker':
+					$id = $_GET['id'];
+					$result = executeQuery("DELETE FROM `bondrucker_typen` WHERE `bondrucker_id`=$id;");
+					if($result != "1"){
+						echo $result;
+					}
+					$result = executeQuery("DELETE FROM `bondrucker` WHERE `id`=$id;");
+					if($result != "1"){
+						echo $result;
+					}
+				break;
         }
     }
     else{

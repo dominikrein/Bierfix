@@ -24,13 +24,13 @@
         <!--Content-->
 		<div class="border px-3 pt-2 pb-3 my-3 shadow w-25 float-left text-center">
 			<h4 class="text-muted mb-2">Bestellungen</h4>
-			<div class="mt-3"><button onClick="removeBestellungen()" class="btn btn-success w-100"><i class="fas fa-database"></i> Alle Bestellungen exportieren</button></div>
+			<div class="mt-3"><button onClick="exportBestellungen()" class="btn btn-success w-100"><i class="fas fa-database"></i> Alle Bestellungen exportieren</button></div>
 			<div class="mt-3"><button onClick="removeBestellungen()" class="btn btn-warning w-100"><i class="fas fa-database"></i> Alle Bestellungen löschen</button></div>
 		</div>
 		<div class="border px-3 pt-2 pb-3 ml-4 my-3 shadow w-25 float-left text-center">
 			<h4 class="text-muted mb-2">Artikel und Artikeltypen</h4>
-			<div class="mt-3"><button onClick="removeBestellungen()" class="btn btn-success w-100"><i class="fas fa-database"></i> Alle Artikel(-typen) exportieren</button></div>
-			<div class="mt-3"><button onClick="removeBestellungen()" class="btn btn-warning w-100"><i class="fas fa-database"></i> Alle Artikel(-typen) löschen</button></div>
+			<div class="mt-3"><button onClick="exportArtikelt()" class="btn btn-success w-100"><i class="fas fa-database"></i> Alle Artikel(-typen) exportieren</button></div>
+			<div class="mt-3"><button onClick="removeArtikelt()" class="btn btn-warning w-100"><i class="fas fa-database"></i> Alle Artikel(-typen) löschen</button></div>
 		</div>
 		<div class="border px-3 pt-2 pb-3 ml-4 my-3 shadow w-25 float-left text-center">
 			<h4 class="text-muted mb-2">Komplette Datenbank</h4>

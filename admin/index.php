@@ -21,16 +21,20 @@
       </nav>
 
       <div class="container-fluid">
-        	<div class="border px-3 pt-2 pb-3 my-3 shadow">
-				<h4 class="text-muted mb-2">Bestellungen pro Bedienung</h4>
+		  	<div class="border px-3 pt-2 pb-3 my-3 shadow">
+				<h4 class="text-muted mb-2">Verkaufte Artikel</h4>
+				<div id="artikelLoading" class="loader">Loading...</div>
+				<div id="chartMeistverkaufteArtikel" style="height: 250px;"></div>
+		  	</div>
+        	<div class="border px-3 pt-2 pb-3 my-3 shadow text-center">
+				<h4 class="text-muted mb-2 text-left">Verkaufte Artikel pro Bedienung</h4>
+				<div id="bestLoading" class="loader">Loading...</div>
 				<div id="chartBestellungenProBedienung" style="height: 200px;"></div>
 		  	</div>
-		  	<div class="border px-3 pt-2 pb-3 my-3 shadow">
-				<h4 class="text-muted mb-2">Meistverkaufte Artikel</h4>
-				<div id="chartMeistverkaufteArtikel" style="height: 200px;"></div>
-		  	</div>
+		  	
 		  <div class="border px-3 pt-2 pb-3 my-3 shadow">
-				<h4 class="text-muted mb-4">Letzte 100 Bestellungen</h4>
+				<h4 class="text-muted mb-4">Bestellungen</h4>
+			    <div id="tableBestLoading" class="loader">Loading...</div>
 				<div >
 					<table class="table table-striped table-hover mt-2">
 						<thead>
@@ -45,7 +49,7 @@
 								<th scope="col"><!--Bearbeiten--></th>
 							</tr>
 						</thead>
-						<tbody id="tabelleLetzteBestellungen">
+						<tbody id="tabelleBestellungen">
 						</tbody>
 					</table>
 			    </div>

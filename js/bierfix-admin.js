@@ -40,7 +40,7 @@ function getArtikeltypenFromDB(callback){
 			catch{
 				alert("Datenbankfehler " + xhr.responseText)
 			}
-			if(artikeltypenliste != null){
+			if(artikeltypenliste != null && callback != null){
 				callback();
 			}
 		} else {
@@ -80,6 +80,45 @@ function printArtikel(){
 	}
 }
 
+function printBondrucker(bondruckerliste){
+	var tableBody = document.getElementById("bondruckerTabelleContainer");
+	tableBody.innerHTML = ""; //Clear content
+	
+	for(var id in bondruckerliste){
+        // skip loop if the property is from prototype
+        if (!bondruckerliste.hasOwnProperty(id)) continue;
+		
+		var drucker = bondruckerliste[id];
+		var tr = document.createElement("tr");
+		tr.innerHTML = `
+			<th scope="row">${drucker.id}</th>
+			<td>${drucker.bezeichnung}</td>
+			<td>${drucker.ipaddr}</td>
+			<td>${drucker.device_id}</td>
+			<td id="typen-${drucker.id}"></td>
+			<td>
+				<button class="btn btn-danger py-1 px-2" data-toggle="modal" data-target="#bondruckerModal" data-id="${drucker.id}" data-action="remove"><i class="fas fa-trash-alt"></i></button>
+			</td>
+		`;
+		tableBody.appendChild(tr);		
+		asyncGetRet(`../php/dbAction.php?action=getBondruckerTypen&id=${drucker.id}`, fillBondruckerArtikeltypen);
+	}
+}
+
+function fillBondruckerArtikeltypen(typen){
+	let druckerId = typen[0].bondrucker_id;
+	
+	let zelle = document.getElementById(`typen-${druckerId}`);
+	
+	let content = "";
+	
+	for(let i=0; i<typen.length;i++){
+		content += `${typen[i].id}: ${typen[i].bezeichnung}<br>`;
+	}
+	
+	zelle.innerHTML = content;
+}
+
 function printArtikeltypen(){
 	var tableBody = document.getElementById("artikeltypenTabelleContainer");
 	tableBody.innerHTML = ""; //Clear content
@@ -108,7 +147,66 @@ function removeArtikel($id){
 }
 
 function dashboardOnload(){
+	//Bestellungen pro Bedienung
 	asyncGetRet("../php/dbAction.php?action=bestellungenProBedienung", printGraphBedienung);
+	
+	//Meistverkaufte Artikel
+	asyncGetRet("../php/dbAction.php?action=meistverkaufteArtikel", printGraphArtikel);	
+	
+	//Bestellungen
+	asyncGetRet("../php/dbAction.php?action=getBestellungen&limit=20&offset=0", printBestellungen);	
+	
+}
+
+function printBestellungen(bestellungen){
+	var tableBody = document.getElementById("tabelleBestellungen");
+	tableBody.innerHTML = ""; //Clear content
+	
+	for(var id in bestellungen){
+        // skip loop if the property is from prototype
+        if (!bestellungen.hasOwnProperty(id)) continue;
+		
+		var best = bestellungen[id];		
+		var tr = document.createElement("tr");
+		tr.innerHTML = `
+			<th scope="row">${best.id}</th>
+			<td>${best.bediener_name}</td>
+			<td>${best.tischnummer}</td>
+			<td id="artikel-${best.id}"><div class="smallLoader"></div></td>
+			<td id="summe-${best.id}"><div class="smallLoader"></div></td>
+			<td>${best.zeitstempel}</td>
+			<td>${best.bon}</td>		
+		`;
+		tableBody.appendChild(tr);	
+		asyncGetRet(`../php/dbAction.php?action=getBestellteArtikel&bestid=${best.id}`, fillBestellungTable);
+	}
+	document.getElementById("tableBestLoading").style.display="none";
+}
+
+function fillBestellungTable(artikelset){
+	// Diese FUnktion wird asynchron aufgerufen. Also erst schauen zu welcher 
+	// Bestellung die Daten gehöhren anhand der mitgelieferten Bestellungsid.
+	//Nehme also die ID vom ersten ARtikel
+	let artikelZeile = document.getElementById(`artikel-${artikelset[0].bestellung_id}`);
+	let summeZeile = document.getElementById(`summe-${artikelset[0].bestellung_id}`);
+	
+	let artikelText = "";
+	let gesamtsumme = 0.0;
+	
+	for(var id in artikelset){
+        // skip loop if the property is from prototype
+        if (!artikelset.hasOwnProperty(id)) continue;
+		
+		let ba = artikelset[id];
+		
+		artikelText += `${ba.bestellte_anzahl}x ${ba.bezeichnung} <i>${ba.details}</i><br>`;
+		gesamtsumme += ba.bestellte_anzahl * ba.preis;	
+		
+	}
+	
+	artikelZeile.innerHTML = artikelText;
+	summeZeile.innerHTML = `${gesamtsumme.toFixed(2)}&euro;`;
+	
 }
 
 function asyncGetRet(url, callback){
@@ -147,6 +245,32 @@ function printGraphBedienung(artikelProBedienung){
 	
 	var chart = new CanvasJS.Chart("chartBestellungenProBedienung", bestellungen);
 	chart.render();
+	
+	//Loader ausblenden
+	document.getElementById("bestLoading").style.display="none";
+}
+
+function printGraphArtikel(artikelsummary){
+	var artikelsum = {
+		animationEnabled: true,
+		theme: "light2", // "light1", "light2", "dark1", "dark2"
+		data: [{        
+			type: "bar",  
+			dataPoints: [      
+			]
+		}]
+	};
+	
+	for(var rowid in artikelsummary){ 
+		let row = artikelsummary[rowid];
+		artikelsum.data[0].dataPoints.push({ y: parseInt(row.summe), label: `${row.bezeichnung}`});
+	}
+	
+	var chart = new CanvasJS.Chart("chartMeistverkaufteArtikel", artikelsum);
+	chart.render();
+	
+	//Loader ausblenden
+	document.getElementById("artikelLoading").style.display="none";
 }
 
 function removeArtikeltyp($id){
@@ -273,6 +397,35 @@ function editArtikel(id){
 	$("#artikelModal").modal('toggle');
 }
 
+function addBondrucker(){
+	var bezeichnung = document.getElementById("bondruckerModalBezeichnung").value;
+	var ipaddr = document.getElementById("bondruckerModalIp").value;
+	var device_id = document.getElementById("bondruckerModalDevid").value;
+	
+	let url = `../php/dbAction.php?action=addBondrucker&bezeichnung=${bezeichnung}&ipaddr=${ipaddr}&deviceid=${device_id}`;
+	
+	//Gucken welche Checkboxen aktiviert wurden
+	let checkboxen = document.getElementsByName("bontypcheck");
+	for(let i=0; i<checkboxen.length; i++){
+		let cb = checkboxen[i];
+		if(cb.checked){			
+			url += `&typen[]=${cb.dataset.id}`;
+		}
+	}	
+	
+	asyncGet(url, getAndPrintBondrucker);
+	$("#bondruckerModal").modal('toggle');
+}
+
+function removeBondrucker(druckerId){
+	asyncGet(`../php/dbAction.php?action=removeBondrucker&id=${druckerId}`, getAndPrintBondrucker);
+	$("#bondruckerModal").modal('toggle');
+}
+
+function getAndPrintBondrucker(){
+	asyncGetRet('../php/dbAction.php?action=getBondrucker', printBondrucker);
+}
+
 $("#artikelModal").on('show.bs.modal', function(event){
 	var button = $(event.relatedTarget);
 	var action = button.data('action');
@@ -350,6 +503,48 @@ $("#artikeltypenModal").on('show.bs.modal', function(event){
 						document.getElementById("artikeltypenFormAddEdit").style = "display: none;";
 						document.getElementById("artikeltypenFormRemove").style = "";
 						document.getElementById("artikeltypenFormRemove").innerHTML = `Soll der Artikeltyp <strong>${artikeltyp.bezeichnung}</strong> mit der ID <strong>${artikeltyp.id}</strong> wirklich entfernt werden?`;
+			break;
+	}
+});
+
+$("#bondruckerModal").on('show.bs.modal', function(event){
+	let button = $(event.relatedTarget);
+	var action = button.data('action');
+	
+	switch(action){
+		case "add":		document.getElementById("bondruckerModalLabel").innerHTML = "Bondrucker hinzuf&uuml;gen";
+						document.getElementById("bondruckerModalSave").setAttribute("onClick", "addBondrucker()");
+						document.getElementById("bondruckerModalBezeichnung").value = "";
+						document.getElementById("bondruckerFormAddEdit").style = "";
+						document.getElementById("bondruckerFormRemove").style = "display: none;";
+						document.getElementById("bondruckerModalSave").innerHTML = "Hinzuf&uuml;gen";
+						document.getElementById("bondruckerModalSave").className = "btn btn-success";
+						
+						getArtikeltypenFromDB( function () {
+							let checkboxen = document.getElementById("bondrucker_check"); //Checkboxen Container
+							let content = "";
+							for(let typid in artikeltypenliste){
+								let typ = artikeltypenliste[typid];
+								content += `
+									<div class="form-check">
+										  <input name="bontypcheck" class="form-check-input" type="checkbox" data-id="${typ.id}" id="check-${typ.id}" checked>
+										  <label class="form-check-label" for="check-${typ.id}">
+											${typ.bezeichnung}
+										  </label>
+									</div>		
+								`;
+							}
+							checkboxen.innerHTML = content;
+						});
+						
+			break;
+		case "remove": 	document.getElementById("bondruckerModalLabel").innerHTML = "Bondrucker entfernen";
+						document.getElementById("bondruckerModalSave").innerHTML = "Entfernen";
+						document.getElementById("bondruckerModalSave").className = "btn btn-danger";
+						document.getElementById("bondruckerModalSave").setAttribute("onClick", `removeBondrucker(${button.data('id')})`);
+						document.getElementById("bondruckerFormAddEdit").style = "display: none;";
+						document.getElementById("bondruckerFormRemove").style = "";
+						document.getElementById("bondruckerFormRemove").innerHTML = `Soll der Bondrucker mit der ID <strong>${button.data('id')}</strong> wirklich entfernt werden?`;
 			break;
 	}
 });
