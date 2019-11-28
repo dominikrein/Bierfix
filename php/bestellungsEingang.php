@@ -128,7 +128,7 @@ EOD;
 		
 		
 		file_put_contents("../dump.txt", $request);
-		
+	
 		//Initiate cURL
 		$curl = curl_init($url);
 
@@ -159,10 +159,11 @@ EOD;
 		//Print out the response output.
 		echo $result;
 		
-		
 		//Wenn druck erfolgreich -> Update bestellungen als gedruckt
-		$status = "OK";
-		$result = executeQuery("UPDATE `bestellungen` SET `bon`='$status' WHERE bestellungen.id=$bestellung_id;");
+		$status = "OK"; //todo
+		
+		
+		$result = executeQuery("UPDATE `bestellungen` SET `bon` = '$status' WHERE `bestellungen`.`id` = $bestellung_id");
 		if($result != "1"){
 			echo $result;
 		}

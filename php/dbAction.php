@@ -110,7 +110,7 @@
 				$limit = $_GET['limit'];
 				$offset = $_GET['offset'];
 				
-				$query = executeQuery("SELECT bestellungen.id, bestellungen.tischnummer, bestellungen.bediener_name, bestellungen.zeitstempel, bestellungen.bon FROM bestellungen LIMIT $limit OFFSET $offset;");
+				$query = executeQuery("SELECT bestellungen.id, bestellungen.tischnummer, bestellungen.bediener_name, bestellungen.zeitstempel, bestellungen.bon FROM bestellungen ORDER BY bestellungen.id DESC LIMIT $limit OFFSET $offset;");
 				$output = [];
 				while($row = $query->fetch_array(MYSQLI_ASSOC)){
 					$output[] = $row;
@@ -175,6 +175,12 @@
 					if($result != "1"){
 						echo $result;
 					}
+				break;
+			case 'removeBestellungen':
+				$result1 = executeQuery("DELETE FROM bestellte_artikel;");
+				$result2 = executeQuery("DELETE FROM bestellungen;");
+				echo $result1 . "  " . $result2;
+				
 				break;
 			default:  http_response_code(400);
         				echo "Not found!";

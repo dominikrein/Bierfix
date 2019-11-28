@@ -183,6 +183,10 @@ function printBestellungen(bestellungen){
 	document.getElementById("tableBestLoading").style.display="none";
 }
 
+function removeBestellungen(){
+	asyncGet("../php/dbAction.php?action=removeBestellungen", alert);
+}
+
 function fillBestellungTable(artikelset){
 	// Diese FUnktion wird asynchron aufgerufen. Also erst schauen zu welcher 
 	// Bestellung die Daten gehöhren anhand der mitgelieferten Bestellungsid.
