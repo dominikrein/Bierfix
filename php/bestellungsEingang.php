@@ -1,8 +1,6 @@
 <?php
     //EINSTELLUNGEN
     $festTitel = "2. Öschinger Weideabtrieb";
-    $printerIp = "192.168.2.127";
-    $statistik_dateiname = "../bierfix_statistik.csv";
 
 	include_once('database.php');
 	include_once 'drucken.php';

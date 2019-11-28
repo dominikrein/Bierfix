@@ -117,6 +117,15 @@
 				}
 				echo json_encode($output);
 				break;
+			case 'getBestellteArtikel':
+				$query = executeQuery("SELECT bestellte_artikel.bestellung_id, bestellte_artikel.bestellte_anzahl, artikel.bezeichnung, artikel.details, artikel.preis FROM bestellte_artikel INNER JOIN artikel ON artikel.id=bestellte_artikel.artikel_id;");
+				$output = [];
+				while($row = $query->fetch_array(MYSQLI_ASSOC)){
+					$output[] = $row;
+				}
+				echo json_encode($output);
+				break;
+			
 			case 'getBondrucker':			
 				$query = executeQuery("SELECT * FROM bondrucker;");
 				$output = [];
@@ -165,6 +174,9 @@
 					if($result != "1"){
 						echo $result;
 					}
+				break;
+			default:  http_response_code(400);
+        				echo "Not found!";
 				break;
         }
     }
