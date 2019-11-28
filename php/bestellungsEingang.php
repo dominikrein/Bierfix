@@ -3,7 +3,8 @@
     $festTitel = "2. Öschinger Weideabtrieb";
 
 	include_once('database.php');
-	include_once 'drucken.php';
+
+	//include_once 'drucken.php';
  
     $bestellungXml = new SimpleXMLElement($_POST["xml"]);
     $bestellung = array();
@@ -49,9 +50,10 @@
 	}
    	
 	foreach($druckerliste as $bondrucker){
-		 $ipaddr[] = $bondrucker['ipaddr'];
+		 $ipaddr = $bondrucker['ipaddr'];
 		 $device_id = $bondrucker['device_id'];		
 		 $url = "http://$ipaddr/cgi-bin/epos/service.cgi?devid=$device_id&timeout=10000";
+		 $gesamtbetrag = 0;
 
 		 //Welche Artikeltypen werden mit diesem Drucker gedruckt?
 		$bondrucker_id = $bondrucker['id'];
@@ -63,36 +65,43 @@
 		
 		$bonContent = "";
 		
-		foreach($typ as $typenliste){
+		foreach($typenliste as $typ){
 			//Diese Typen sollen mit dem Drucker gedruckt werden
-			 $typBezeichnung = $typ.bezeichnung;
-			 $bonContent .= "<feed/><text smooth=\"true\" width=\"1\" height=\"1\" align=\"left\" reverse=\"false\">------------------------------------------</text><feed/><text align=\"center\" smooth=\"true\" width=\"1\" height=\"1\" reverse=\"false\">$typBezeichnung</text><feed/><text smooth=\"true\" width=\"1\" height=\"1\" align=\"left\" reverse=\"false\">------------------------------------------</text>";
+			 $typBezeichnung = $typ['bezeichnung'];
+			 $typId = $typ['id'];
+			 
 			
-			$query = executeQuery("SELECT artikel.bezeichnung, artikel.details, artikel.preis FROM bestellungen INNER JOIN bestellte_artikel ON bestellungen.id=bestellte_artikel.bestellung_id INNER JOIN artikel ON bestellte_artikel.artikel_id=artikel.id WHERE bestellungen.id=$bestellung_id;");
+			$query = executeQuery("SELECT bestellte_artikel.bestellte_anzahl, artikel.bezeichnung, artikel.details, artikel.preis FROM bestellungen INNER JOIN bestellte_artikel ON bestellungen.id=bestellte_artikel.bestellung_id INNER JOIN artikel ON bestellte_artikel.artikel_id=artikel.id WHERE bestellungen.id=$bestellung_id AND artikel.typ=$typId;");
 			$artikelliste = [];
 			while($row = $query->fetch_array(MYSQLI_ASSOC)){
 				$artikelliste[] = $row;
 			}
 			
-			//Es stehen beim Drucker exakt 42 Zeichen pro Zeile zur Verfügung 
-			//Da Preis rechtsbündig müssen die Leerzeichen berechnet werden!
-			//2x Bier 0,5l    6.50€
-			$leerzeichen = "";                
-			$zeile = "";
-			while(mb_strlen($zeile, "utf-8") < 42){            
-				$zeile = $anzahl . "x " . $bezeichnung . " " . $details . $leerzeichen . $preis . "€";
-				$leerzeichen .= " ";
+			//Prüfen ob Artikel im Typ bestellt wurden, nur dann Typ-Header hinzufügen
+			if(count($artikelliste) > 0){
+				$bonContent .= "<feed/><text smooth=\"true\" width=\"1\" height=\"1\" align=\"left\" reverse=\"false\">------------------------------------------</text><feed/><text align=\"center\" smooth=\"true\" width=\"1\" height=\"1\" reverse=\"false\">$typBezeichnung</text><feed/><text smooth=\"true\" width=\"1\" height=\"1\" align=\"left\" reverse=\"false\">------------------------------------------</text>";
 			}
-			$bonContent .= "<feed/> <text smooth=\"true\" align=\"left\" reverse=\"false\">" . $zeile . "</text>";
-		}
-		
-		
-		
-		
+			
+			foreach($artikelliste as $artikel){
+				//Es stehen beim Drucker exakt 42 Zeichen pro Zeile zur Verfügung 
+				//Da Preis rechtsbündig müssen die Leerzeichen berechnet werden!
+				//2x Bier 0,5l    6.50€
+				$leerzeichen = "";                
+				$zeile = "";
+				while(mb_strlen($zeile, "utf-8") < 42){            
+					$zeile = $artikel['bestellte_anzahl'] . "x " . $artikel['bezeichnung'] . " " . $artikel['details'] . $leerzeichen . $artikel['preis'] . "€";
+					$leerzeichen .= " ";
+				}
+				$bonContent .= "<feed/> <text smooth=\"true\" align=\"left\" reverse=\"false\">" . $zeile . "</text>";
+				$gesamtbetrag += $artikel['bestellte_anzahl'] * $artikel['preis'];
+			}
+		}	
+				
 		$logo = file_get_contents("../bonlogo.txt");
 		$datum = date("d.m.Y  H:i") . " Uhr";
 		$tischnummer = "Tischnummer: $tischnummer";
-		$gesamtbetrag = number_format($gesamtbetrag, 2, '.', '');
+		$bediener = "Kassierer: " . $bediener;
+		$gesamtbetrag = "Gesamtbetrag: " . number_format($gesamtbetrag, 2, '.', '') . "€";
 		
 		$request = <<<EOD
 			<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/">
@@ -118,6 +127,45 @@
 EOD;
 		
 		
+		file_put_contents("../dump.txt", $request);
+		
+		//Initiate cURL
+		$curl = curl_init($url);
+
+		//Set the Content-Type to text/xml.
+		curl_setopt($curl, CURLOPT_HTTPHEADER, array("Content-Type: text/xml", "If-Modified-Since: Thu, 01 Jan 1970 00:00:00 GMT", "SOAPAction: \"\""));
+
+		//Set CURLOPT_POST to true to send a POST request.
+		curl_setopt($curl, CURLOPT_POST, true);
+
+		//Attach the XML string to the body of our request.
+		curl_setopt($curl, CURLOPT_POSTFIELDS, $request);
+
+		//Tell cURL that we want the response to be returned as
+		//a string instead of being dumped to the output.
+		curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+
+		//Execute the POST request and send our XML.
+		$result = curl_exec($curl);
+
+		//Do some basic error checking.
+		if(curl_errno($curl)){
+			throw new Exception(curl_error($curl));
+		}
+
+		//Close the cURL handle.
+		curl_close($curl);
+
+		//Print out the response output.
+		echo $result;
+		
+		
+		//Wenn druck erfolgreich -> Update bestellungen als gedruckt
+		$status = "OK";
+		$result = executeQuery("UPDATE `bestellungen` SET `bon`='$status' WHERE bestellungen.id=$bestellung_id;");
+		if($result != "1"){
+			echo $result;
+		}
 	}
 	
 ?>

@@ -118,7 +118,8 @@
 				echo json_encode($output);
 				break;
 			case 'getBestellteArtikel':
-				$query = executeQuery("SELECT bestellte_artikel.bestellung_id, bestellte_artikel.bestellte_anzahl, artikel.bezeichnung, artikel.details, artikel.preis FROM bestellte_artikel INNER JOIN artikel ON artikel.id=bestellte_artikel.artikel_id;");
+				$bestid= $_GET['bestid'];
+				$query = executeQuery("SELECT bestellte_artikel.bestellung_id, bestellte_artikel.bestellte_anzahl, artikel.bezeichnung, artikel.details, artikel.preis FROM bestellte_artikel INNER JOIN artikel ON artikel.id=bestellte_artikel.artikel_id WHERE bestellte_artikel.bestellung_id=$bestid;");
 				$output = [];
 				while($row = $query->fetch_array(MYSQLI_ASSOC)){
 					$output[] = $row;
