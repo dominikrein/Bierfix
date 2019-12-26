@@ -24,7 +24,7 @@
             <div class="border px-3 pt-2 pb-3 my-3 shadow">
                 <h4 class="text-muted mb-2">Verkaufte Artikel</h4>
                 <div id="artikelLoading" class="loader">Loading...</div>
-                <div id="chartMeistverkaufteArtikel" style="height: 250px;"></div>
+                <div id="chartMeistverkaufteArtikel" style="height: 600px;"></div>
             </div>
         </div>
     </div>

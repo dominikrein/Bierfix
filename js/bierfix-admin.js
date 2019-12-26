@@ -149,16 +149,19 @@ function removeArtikel($id){
 function bedienerstatistikOnload(){
 	//Bestellungen pro Bedienung
 	asyncGetRet("../php/dbAction.php?action=bestellungenProBedienung", printGraphBedienung);
+	setTimeout(bedienerstatistikOnload, 10000);
 }
 
 function artikelstatistikOnload(){
 	//Meistverkaufte Artikel
 	asyncGetRet("../php/dbAction.php?action=meistverkaufteArtikel", printGraphArtikel);
+	setTimeout(artikelstatistikOnload, 10000);
 }
 
 function bestellungDashboardOnload(){
 	//Bestellungen
 	asyncGetRet("../php/dbAction.php?action=getBestellungen&limit=20&offset=0", printBestellungen);
+	setTimeout(bestellungDashboardOnload, 10000);
 }
 
 function printBestellungen(bestellungen){
@@ -184,6 +187,10 @@ function printBestellungen(bestellungen){
 		asyncGetRet(`../php/dbAction.php?action=getBestellteArtikel&bestid=${best.id}`, fillBestellungTable);
 	}
 	document.getElementById("tableBestLoading").style.display="none";
+}
+
+function exportBestellungen(){
+
 }
 
 function removeBestellungen(){
@@ -236,7 +243,7 @@ function asyncGetRet(url, callback){
 
 function printGraphBedienung(artikelProBedienung){
 	var bestellungen = {
-		animationEnabled: true,
+		animationEnabled: false,
 		theme: "light2", // "light1", "light2", "dark1", "dark2"
 		data: [{        
 			type: "column",  
@@ -259,7 +266,7 @@ function printGraphBedienung(artikelProBedienung){
 
 function printGraphArtikel(artikelsummary){
 	var artikelsum = {
-		animationEnabled: true,
+		animationEnabled: false,
 		theme: "light2", // "light1", "light2", "dark1", "dark2"
 		data: [{        
 			type: "bar",  

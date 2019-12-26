@@ -24,7 +24,7 @@
             <div class="border px-3 pt-2 pb-3 my-3 shadow text-center">
                 <h4 class="text-muted mb-2 text-left">Verkaufte Artikel pro Bedienung</h4>
                 <div id="bestLoading" class="loader">Loading...</div>
-                <div id="chartBestellungenProBedienung" style="height: 200px;"></div>
+                <div id="chartBestellungenProBedienung" style="height: 600px;"></div>
             </div>
         </div>
     </div>
