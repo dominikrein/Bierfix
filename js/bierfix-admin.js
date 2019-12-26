@@ -146,16 +146,19 @@ function removeArtikel($id){
 	location.reload();
 }
 
-function dashboardOnload(){
+function bedienerstatistikOnload(){
 	//Bestellungen pro Bedienung
 	asyncGetRet("../php/dbAction.php?action=bestellungenProBedienung", printGraphBedienung);
-	
+}
+
+function artikelstatistikOnload(){
 	//Meistverkaufte Artikel
-	asyncGetRet("../php/dbAction.php?action=meistverkaufteArtikel", printGraphArtikel);	
-	
+	asyncGetRet("../php/dbAction.php?action=meistverkaufteArtikel", printGraphArtikel);
+}
+
+function bestellungDashboardOnload(){
 	//Bestellungen
-	asyncGetRet("../php/dbAction.php?action=getBestellungen&limit=20&offset=0", printBestellungen);	
-	
+	asyncGetRet("../php/dbAction.php?action=getBestellungen&limit=20&offset=0", printBestellungen);
 }
 
 function printBestellungen(bestellungen){
